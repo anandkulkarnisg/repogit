@@ -19,14 +19,11 @@ int main(int argc, char* argv[])
 	int arr[] = { 5, 2, 3, 1, 4 };
 	std::size_t size = sizeof(arr) / sizeof(arr[0]);
 
-	std::array<std::function<void(SortingAlgorithms<int>&)>, 7> ptr =
-		{   &SortingAlgorithms<int>::runInsertionSort, &SortingAlgorithms<int>::runBubbleSort,
-			&SortingAlgorithms<int>::runSelectionSort, &SortingAlgorithms<int>::runShellSort,
-			&SortingAlgorithms<int>::runQuickSort, &SortingAlgorithms<int>::runHeapSort,
-			&SortingAlgorithms<int>::runMergeSort
-	};
+	std::array<std::function<void(SortingAlgorithms<int>&)>, 7> ptr = { &SortingAlgorithms<int>::runInsertionSort, &SortingAlgorithms<int>::runBubbleSort,
+			&SortingAlgorithms<int>::runSelectionSort, &SortingAlgorithms<int>::runShellSort, &SortingAlgorithms<int>::runQuickSort,
+			&SortingAlgorithms<int>::runHeapSort, &SortingAlgorithms<int>::runMergeSort };
 
-	std::array<std::string, 7> sortingNames = { "insertionsort", "bubblesort", "selectionsort", "shellsort", "quicksort", "heapsort", "mergesort"};
+	std::array<std::string, 7> sortingNames = { "insertionsort", "bubblesort", "selectionsort", "shellsort", "quicksort", "heapsort", "mergesort" };
 	std::size_t totalsize = ptr.size();
 
 	SortingAlgorithms<int> integerSorter(&arr[0], size, SortingMode::descending);
@@ -40,7 +37,7 @@ int main(int argc, char* argv[])
 		cout << "after descending sort:-" << endl;
 		integerSorter.printArray();
 		integerSorter.setSortingMode(SortingMode::ascending);
-			ptr[it](integerSorter);
+		ptr[it](integerSorter);
 		cout << "after ascending sort:-" << endl;
 		integerSorter.printArray();
 		arr[0] = 5;

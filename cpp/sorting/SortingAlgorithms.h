@@ -181,10 +181,9 @@ template<typename T> void SortingAlgorithms<T>::quickSort(long low, long high)
 	}
 }
 
-
 template<typename T> void SortingAlgorithms<T>::runQuickSort()
 {
-	quickSort(0,static_cast<long>(size-1));
+	quickSort(0, static_cast<long>(size - 1));
 }
 
 template<typename T> void SortingAlgorithms<T>::heapify(long n, long i)
@@ -194,11 +193,11 @@ template<typename T> void SortingAlgorithms<T>::heapify(long n, long i)
 	long r = 2 * i + 2;  // right = 2*i + 2
 
 	// If left child is larger than root
-	if (l < n && sortCondition(ptr[l], ptr[largest]))// switch the comparison to convert the heap structure to either max/min here. This changes the direction of sorting.
+	if (l < n && sortCondition(ptr[l], ptr[largest])) // switch the comparison to convert the heap structure to either max/min here. This changes the direction of sorting.
 		largest = l;
 
 	// If right child is larger than largest so far
-	if (r < n && sortCondition(ptr[r], ptr[largest]))// switch the comparison to convert the heap structure to either max/min here. This changes the direction of sorting.
+	if (r < n && sortCondition(ptr[r], ptr[largest])) // switch the comparison to convert the heap structure to either max/min here. This changes the direction of sorting.
 		largest = r;
 
 	// If largest is not root
@@ -255,7 +254,7 @@ template<typename T> void SortingAlgorithms<T>::merge(long l, long m, long r)
 	k = l; // Initial index of merged subarray
 	while (i < n1 && j < n2)
 	{
-		if (!sortCondition(L[i],R[j]))			// switch the comparison direction here to sort the arr in other way.
+		if (!sortCondition(L[i], R[j]))			// switch the comparison direction here to sort the arr in other way.
 		{
 			ptr[k] = L[i];
 			i++;
@@ -305,7 +304,7 @@ template<typename T> void SortingAlgorithms<T>::mergeSort(long l, long r)
 
 template<typename T> void SortingAlgorithms<T>::runMergeSort()
 {
-	mergeSort(0, static_cast<long>(size-1));
+	mergeSort(0, static_cast<long>(size - 1));
 }
 
 #endif /* SORTINGALGORITHMS_H_ */
