@@ -18,9 +18,9 @@ int main(int argc, char* argv[]) {
 
 	int arr[] = { 5, 2, 3, 1, 4 };
 	std::size_t size = sizeof(arr) / sizeof(arr[0]);
-	std::array<std::function<void(SortingAlgorithms<int>&)>, 3> ptr = { &SortingAlgorithms<int>::runInsertionSort, &SortingAlgorithms<int>::runBubbleSort,
-			&SortingAlgorithms<int>::runSelectionSort };
-	std::array<std::string, 3> sortingNames = { "insertionsort", "bubblesort", "selectionsort" };
+	std::array<std::function<void(SortingAlgorithms<int>&)>, 4> ptr = { &SortingAlgorithms<int>::runInsertionSort, &SortingAlgorithms<int>::runBubbleSort,
+			&SortingAlgorithms<int>::runSelectionSort, &SortingAlgorithms<int>::runShellSort };
+	std::array<std::string, 4> sortingNames = { "insertionsort", "bubblesort", "selectionsort", "shellsort" };
 	std::size_t totalsize = ptr.size();
 	SortingAlgorithms<int> integerSorter(&arr[0], size, SortingMode::descending);
 	for (std::size_t it = 0; it < totalsize; ++it) {
