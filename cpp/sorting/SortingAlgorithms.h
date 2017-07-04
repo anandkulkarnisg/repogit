@@ -30,6 +30,7 @@ public:
 	void printArray();
 	void runInsertionSort();
 	void runBubbleSort();
+	void runSelectionSort();
 	void setSortingMode(SortingMode);
 };
 
@@ -49,11 +50,14 @@ template<typename T> void SortingAlgorithms<T>::printArray() {
 }
 
 template<typename T> inline bool SortingAlgorithms<T>::sortCondition(T arg1, T arg2) {
+
 	if (mode == SortingMode::ascending)
 		return (arg1 > arg2);
 
 	if (mode == SortingMode::descending)
 		return (arg1 < arg2);
+	else
+		return (SortingMode::ascending);
 
 }
 
@@ -90,6 +94,21 @@ template<typename T> void SortingAlgorithms<T>::runBubbleSort() {
 				swapItems(&ptr[iterator2 + 1], &ptr[iterator2]);
 		}
 	}
+}
+
+template<typename T> void SortingAlgorithms<T>::runSelectionSort() {
+
+	for (std::size_t iterator = 0; iterator < size - 1; ++iterator) {
+		std::size_t min = iterator;
+		for (std::size_t iterator2 = (iterator + 1); iterator2 <= size - 1; ++iterator2) {
+			if (sortCondition(ptr[iterator2], ptr[min])) {
+				min = iterator2;
+			}
+		}
+		if (min != iterator)
+			swapItems(&ptr[min], &ptr[iterator]);
+	}
+
 }
 
 #endif /* SORTINGALGORITHMS_H_ */

@@ -7,42 +7,36 @@
 
 #include<iostream>
 #include<string>
+#include <cxxabi.h>
+#include<vector>
+#include<functional>
 #include<SortingAlgorithms.h>
 
 using namespace std;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
+
 	int arr[] = { 5, 2, 3, 1, 4 };
-	std::size_t size = sizeof(arr)/sizeof(arr[0]);
-
-	// Insertion sort example
+	std::size_t size = sizeof(arr) / sizeof(arr[0]);
+	std::array<std::function<void(SortingAlgorithms<int>&)>, 3> ptr = { &SortingAlgorithms<int>::runInsertionSort, &SortingAlgorithms<int>::runBubbleSort,
+			&SortingAlgorithms<int>::runSelectionSort };
+	std::array<std::string, 3> sortingNames = { "insertionsort", "bubblesort", "selectionsort" };
+	std::size_t totalsize = ptr.size();
 	SortingAlgorithms<int> integerSorter(&arr[0], size, SortingMode::descending);
-	cout << "before :" << endl;
-	integerSorter.printArray();
-	integerSorter.runInsertionSort();
-	cout << "after :" << endl;
-	integerSorter.printArray();
-	integerSorter.setSortingMode(SortingMode::ascending);
-	integerSorter.runInsertionSort();
-	cout << "after :" << endl;
-	integerSorter.printArray();
+	for (std::size_t it = 0; it < totalsize; ++it) {
+		integerSorter.setSortingMode(SortingMode::descending);
+		cout << "running " << sortingNames[it] << " sorting" << endl;
+		cout << "before :" << endl;
+		integerSorter.printArray();
+		ptr[it](integerSorter);
+		cout << "after :" << endl;
+		integerSorter.printArray();
+		integerSorter.setSortingMode(SortingMode::ascending);
+		ptr[it](integerSorter);
+		cout << "after :" << endl;
+		integerSorter.printArray();
+	}
+	return (0);
 
-	// Bubble sort example.
-	int arr2[] = { 5, 2, 3, 1, 4 };
-	size = sizeof(arr2)/sizeof(arr2[0]);
-	SortingAlgorithms<int> integerSorter2(&arr2[0], size, SortingMode::descending);
-	cout << "before :" << endl;
-	integerSorter2.printArray();
-	integerSorter2.runBubbleSort();
-	cout << "after :" << endl;
-	integerSorter2.printArray();
-	integerSorter2.setSortingMode(SortingMode::ascending);
-	integerSorter2.runBubbleSort();
-	cout << "after :" << endl;
-	integerSorter2.printArray();
-
-	return(0);
 }
-
 
