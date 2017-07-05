@@ -4,12 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../MainDriver.cpp \
 ../SortingAlgorithms.cpp 
 
 OBJS += \
+./MainDriver.o \
 ./SortingAlgorithms.o 
 
 CPP_DEPS += \
+./MainDriver.d \
 ./SortingAlgorithms.d 
 
 
