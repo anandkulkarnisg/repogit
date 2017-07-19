@@ -219,6 +219,7 @@ template<typename T> bool SingleLinkedList<T>::deleteNode(SingleLinkedListNode<T
 			// delete the iterator item.
 			previousIterator->setNext(nullptr);
 			delete iterator;
+			isDeleted=true;
 		}
 		return (isDeleted);
 	}
