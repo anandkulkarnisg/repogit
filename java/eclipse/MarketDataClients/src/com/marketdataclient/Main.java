@@ -13,31 +13,44 @@ import com.marketdataclient.ICICIResultParser.exchangeInfo;
 
 public class Main
 {
+
+	public enum executionType
+	{
+		Threaded, Serial
+	}
+
 	public static void main(String[] args)
 	{
+
+		// First load the stock symbol names from a Seperate Config file.
 		String[] stockItems = loadEquitySymbolsFromConfigFile();
-		String executionMode = args[0];
-		boolean tickDisplayMode = false;
 
-		if (args[1] != null && args[1].equalsIgnoreCase("y"))
-			tickDisplayMode = true;
+		// Load the properties config file for the marketDataConfig.
+		MarketDataConfigManager marketDataConfig = new MarketDataConfigManager();
 
-		if (executionMode.equalsIgnoreCase("threaded"))
-			runInThreadedMode(stockItems, tickDisplayMode);
+		String executionMode = marketDataConfig.getConfigMap().get("executionMode");
+
+		if (executionMode.equals(executionType.Threaded.toString()))
+			runInThreadedMode(stockItems, marketDataConfig);
 		else
-			runInSerialMode(stockItems, tickDisplayMode);
+			runInSerialMode(stockItems, marketDataConfig);
 
 		System.exit(0);
 	}
 
-	static private void runInThreadedMode(String[] stockItems, boolean tickDisplayMode)
+	static private void runInThreadedMode(String[] stockItems, MarketDataConfigManager marketDataConfig)
 	{
 
+		boolean tickDisplayMode = Boolean.getBoolean(marketDataConfig.getConfigMap().get("displayMode"));
 		ExecutorService executor = Executors.newFixedThreadPool(stockItems.length);
+
 		ICICIWorkerThread.setPrintTickResults(tickDisplayMode);
-		if(!tickDisplayMode)
+		ICICIWorkerThread.setNSE(Boolean.parseBoolean(marketDataConfig.getConfigMap().get("NSEStatus")));
+		ICICIWorkerThread.setBSE(Boolean.parseBoolean(marketDataConfig.getConfigMap().get("BSEStatus")));
+
+		if (!tickDisplayMode)
 			GenericUtils.printCsvHeader();
-		
+
 		for (int i = 0; i < stockItems.length; i++)
 		{
 			Runnable worker = new ICICIWorkerThread(stockItems[i]);
@@ -57,8 +70,9 @@ public class Main
 		executor.shutdownNow();
 	}
 
-	static private void runInSerialMode(String[] stockItems, boolean tickDisplayMode)
+	static private void runInSerialMode(String[] stockItems, MarketDataConfigManager marketDataConfig)
 	{
+		boolean tickDisplayMode = Boolean.getBoolean(marketDataConfig.getConfigMap().get("displayMode"));
 		int tickCount = 1;
 		while (tickCount < 1000)
 		{
@@ -103,8 +117,6 @@ public class Main
 	private static String[] loadEquitySymbolsFromConfigFile()
 	{
 
-		// String[] stockItems = { "INFTEC", "SININD", "WIPRO", "HCLINF",
-		// "HDIL", "GVKPOW", "TCS", "DLFLIM", "GOLDEX", "SUBSYS" };
 		BufferedReader b = null;
 		ArrayList<String> stockSymbols = new ArrayList<String>();
 		String filePath = System.getProperty("user.dir") + "/config/eqsymbols.cfg";

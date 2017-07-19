@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang3.tuple.Pair;
-
 import com.marketdataclient.ICICIResultParser.exchangeInfo;
 
 public class ICICIPrices extends LivePrices

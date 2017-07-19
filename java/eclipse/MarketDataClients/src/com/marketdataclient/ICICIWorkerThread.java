@@ -9,6 +9,28 @@ public class ICICIWorkerThread implements Runnable
 	private String stockName;
 	static AtomicInteger atomicInteger = new AtomicInteger(0);
 	static boolean printTickResults = true;
+	static boolean isNSE = false;
+	static boolean isBSE = false;
+
+	public static boolean isBSE()
+	{
+		return isBSE;
+	}
+
+	public static void setBSE(boolean isBSE)
+	{
+		ICICIWorkerThread.isBSE = isBSE;
+	}
+
+	public static boolean isNSE()
+	{
+		return isNSE;
+	}
+
+	public static void setNSE(boolean isNSE)
+	{
+		ICICIWorkerThread.isNSE = isNSE;
+	}
 
 	public static boolean isPrintTickResults()
 	{
@@ -54,11 +76,24 @@ public class ICICIWorkerThread implements Runnable
 			Map<String, Object> streamResultMap = priceItem.streamPrices();
 			if (!streamResultMap.isEmpty())
 			{
-				ICICIResultParser nseResultParser = new ICICIResultParser(streamResultMap, exchangeInfo.BSE);
 				if (isPrintTickResults())
+				{
 					GenericUtils.printResults(streamResultMap, stockName, counter);
-				else
-					GenericUtils.csvFormatResultPrinter(nseResultParser, stockName, counter);
+				} else
+				{
+					if (isNSE())
+					{
+						ICICIResultParser nseResultParser = new ICICIResultParser(streamResultMap, exchangeInfo.NSE);
+						GenericUtils.csvFormatResultPrinter(nseResultParser, stockName, counter);
+					}
+
+					if (isBSE())
+					{
+						ICICIResultParser bseResultParser = new ICICIResultParser(streamResultMap, exchangeInfo.BSE);
+						GenericUtils.csvFormatResultPrinter(bseResultParser, stockName, counter);
+
+					}
+				}
 			} else
 				counter = 1000;
 			++counter;

@@ -5,6 +5,9 @@
 	<classpathentry kind="lib" path="jar/commons-lang3-3.6/commons-lang3-3.6.jar"/>
 	<classpathentry kind="lib" path="jar/jsoup-1.10.3/jsoup-1.10.3.jar"/>
 	<classpathentry kind="lib" path="jar/joda-time-2.9.9/joda-time-2.9.9.jar"/>
-	<classpathentry kind="lib" path="jar/commons-configuration2-2.1.1/commons-configuration2-2.1.1.jar"/>
+	<classpathentry kind="lib" path="jar/commons-configuration-1.10/commons-configuration-1.10.jar"/>
+	<classpathentry kind="lib" path="jar/commons-lang-2.6/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="jar/commons-logging-1.2/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="jar/commons-collections-3.2.2/commons-collections-3.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
