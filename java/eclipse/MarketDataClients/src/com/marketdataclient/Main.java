@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.marketdataclient.ICICIResultParser.exchangeInfo;
 
 public class Main
@@ -19,8 +22,12 @@ public class Main
 		Threaded, Serial
 	}
 
+	final static Logger logger = LogManager.getLogger(Main.class);
+
 	public static void main(String[] args)
 	{
+
+		logger.info("Starting the MarketDataClient Application.");
 
 		// First load the stock symbol names from a Seperate Config file.
 		String[] stockItems = loadEquitySymbolsFromConfigFile();
@@ -119,15 +126,17 @@ public class Main
 
 		BufferedReader b = null;
 		ArrayList<String> stockSymbols = new ArrayList<String>();
-		String filePath = System.getProperty("user.dir") + "/config/eqsymbols.cfg";
+		String filePath = System.getProperty("user.dir") + "/resources/eqsymbols.cfg";
 		File f = new File(filePath);
 		try
 		{
 			b = new BufferedReader(new FileReader(f));
+			logger.info("Successfully Loaded the config file at path = " + filePath);
+
 		} catch (FileNotFoundException e)
 		{
-			System.out.println("Failed to get the config file. please verify the below path");
-			System.out.println(filePath);
+			logger.error("Failed to get the config file. please verify the path = " + filePath);
+			logger.error("Exiting the Application");
 			System.exit(1);
 		}
 		String readLine = "";
@@ -140,7 +149,7 @@ public class Main
 			}
 		} catch (IOException e)
 		{
-			System.out.println("Error loading the config file. returning empty array");
+			logger.warn("Error while reading the equity symbols config file. returning empty array");
 		}
 
 		try
@@ -148,8 +157,18 @@ public class Main
 			b.close();
 		} catch (IOException e)
 		{
-			e.printStackTrace();
+			logger.error("Error closing the file stream for the equity symbols config file. Please verify");
+			logger.warn("The stack trace is as follows " + e.getStackTrace().toString());
 		}
+		
+		if(stockSymbols.size() == 0)
+		{
+			logger.error("Can not load or find any stock symbols from config file. Exiting the application with failure status");
+			System.exit(1);
+		}		
+		else
+			logger.info("Successfully loaded " + stockSymbols.size() + " symbols from the config file.");
+		
 		String[] stocksArray = new String[stockSymbols.size()];
 		stocksArray = stockSymbols.toArray(stocksArray);
 		return (stocksArray);

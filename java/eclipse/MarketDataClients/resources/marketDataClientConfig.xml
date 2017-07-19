@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>   
+	<entry key="executionMode">Threaded</entry>
+	<entry key="displayMode">false</entry>
+	<entry key="NSEStatus">true</entry>
+	<entry key="BSEStatus">true</entry>
+	<entry key="cycleSleepDuration">500</entry>
+	<entry key="maxTickLimit">1000</entry>
+	<entry key="resultWriterDestination">stdout</entry>        
+</properties>

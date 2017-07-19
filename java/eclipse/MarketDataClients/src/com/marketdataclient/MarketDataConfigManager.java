@@ -10,7 +10,7 @@ import org.apache.commons.configuration.tree.ConfigurationNode;
 public class MarketDataConfigManager
 {
 	private XMLConfiguration config;
-	private static final String defaultConfigPath = System.getProperty("user.dir") + "/config/marketDataClientConfig.xml";
+	private static final String defaultConfigPath = System.getProperty("user.dir") + "/resources/marketDataClientConfig.xml";
 	private Map<String, String> configMap;
 
 	public Map<String, String> getConfigMap()
