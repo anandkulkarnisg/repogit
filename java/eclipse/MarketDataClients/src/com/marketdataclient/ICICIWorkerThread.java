@@ -2,6 +2,9 @@ package com.marketdataclient;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.marketdataclient.ICICIResultParser.exchangeInfo;
 
 public class ICICIWorkerThread implements Runnable
@@ -12,6 +15,8 @@ public class ICICIWorkerThread implements Runnable
 	static boolean isNSE = false;
 	static boolean isBSE = false;
 
+	final static Logger logger = LogManager.getLogger(ICICIWorkerThread.class);
+	
 	public static boolean isBSE()
 	{
 		return isBSE;
@@ -78,19 +83,19 @@ public class ICICIWorkerThread implements Runnable
 			{
 				if (isPrintTickResults())
 				{
-					GenericUtils.printResults(streamResultMap, stockName, counter);
+					ICICIHelperUtils.printResults(streamResultMap, stockName, counter);
 				} else
 				{
 					if (isNSE())
 					{
 						ICICIResultParser nseResultParser = new ICICIResultParser(streamResultMap, exchangeInfo.NSE);
-						GenericUtils.csvFormatResultPrinter(nseResultParser, stockName, counter);
+						ICICIHelperUtils.csvFormatResultPrinter(nseResultParser, stockName, counter);
 					}
 
 					if (isBSE())
 					{
 						ICICIResultParser bseResultParser = new ICICIResultParser(streamResultMap, exchangeInfo.BSE);
-						GenericUtils.csvFormatResultPrinter(bseResultParser, stockName, counter);
+						ICICIHelperUtils.csvFormatResultPrinter(bseResultParser, stockName, counter);
 
 					}
 				}

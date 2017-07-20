@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.marketdataclient.ICICIResultParser.exchangeInfo;
@@ -27,6 +26,7 @@ public class Main
 	public static void main(String[] args)
 	{
 
+		// Kick Start the application.
 		logger.info("Starting the MarketDataClient Application.");
 
 		// First load the stock symbol names from a Seperate Config file.
@@ -48,15 +48,20 @@ public class Main
 	static private void runInThreadedMode(String[] stockItems, MarketDataConfigManager marketDataConfig)
 	{
 
-		boolean tickDisplayMode = Boolean.getBoolean(marketDataConfig.getConfigMap().get("displayMode"));
+		Boolean tickDisplayMode = Boolean.getBoolean(marketDataConfig.getConfigMap().get("displayMode"));
 		ExecutorService executor = Executors.newFixedThreadPool(stockItems.length);
 
 		ICICIWorkerThread.setPrintTickResults(tickDisplayMode);
-		ICICIWorkerThread.setNSE(Boolean.parseBoolean(marketDataConfig.getConfigMap().get("NSEStatus")));
-		ICICIWorkerThread.setBSE(Boolean.parseBoolean(marketDataConfig.getConfigMap().get("BSEStatus")));
+		Boolean NSEStatus = Boolean.parseBoolean(marketDataConfig.getConfigMap().get("NSEStatus"));
+		Boolean BSEStatus = Boolean.parseBoolean(marketDataConfig.getConfigMap().get("BSEStatus"));
+		ICICIWorkerThread.setNSE(NSEStatus);
+		ICICIWorkerThread.setBSE(BSEStatus);
+
+		logger.info("Set the below configuration for the worker threaded. The tick display mode is set to " + tickDisplayMode.toString() + ".NSE Publishing is set to " + NSEStatus
+				+ ".BSE Publishing status is set to " + BSEStatus + ".");
 
 		if (!tickDisplayMode)
-			GenericUtils.printCsvHeader();
+			ICICIHelperUtils.printCsvHeader();
 
 		for (int i = 0; i < stockItems.length; i++)
 		{
@@ -92,12 +97,12 @@ public class Main
 				{
 					ICICIResultParser nseResultParser = new ICICIResultParser(streamResultMap, exchangeInfo.NSE);
 					if (tickDisplayMode)
-						GenericUtils.printResults(streamResultMap, stockName, tickCount);
+						ICICIHelperUtils.printResults(streamResultMap, stockName, tickCount);
 					else
-						GenericUtils.csvFormatResultPrinter(nseResultParser, stockName, tickCount);
+						ICICIHelperUtils.csvFormatResultPrinter(nseResultParser, stockName, tickCount);
 				}
 			}
-			System.out.println("sequence count at " + tickCount);
+			logger.info("sequence count at " + tickCount);
 			++tickCount;
 		}
 	}
@@ -160,15 +165,14 @@ public class Main
 			logger.error("Error closing the file stream for the equity symbols config file. Please verify");
 			logger.warn("The stack trace is as follows " + e.getStackTrace().toString());
 		}
-		
-		if(stockSymbols.size() == 0)
+
+		if (stockSymbols.size() == 0)
 		{
 			logger.error("Can not load or find any stock symbols from config file. Exiting the application with failure status");
 			System.exit(1);
-		}		
-		else
+		} else
 			logger.info("Successfully loaded " + stockSymbols.size() + " symbols from the config file.");
-		
+
 		String[] stocksArray = new String[stockSymbols.size()];
 		stocksArray = stockSymbols.toArray(stocksArray);
 		return (stocksArray);

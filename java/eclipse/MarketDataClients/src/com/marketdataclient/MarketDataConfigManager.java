@@ -6,12 +6,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.ConfigurationNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MarketDataConfigManager
 {
 	private XMLConfiguration config;
 	private static final String defaultConfigPath = System.getProperty("user.dir") + "/resources/marketDataClientConfig.xml";
-	private Map<String, String> configMap;
+	private static Map<String, String> configMap;
+
+	final static Logger logger = LogManager.getLogger(MarketDataConfigManager.class);
 
 	public Map<String, String> getConfigMap()
 	{
@@ -28,6 +32,7 @@ public class MarketDataConfigManager
 			String value = (String) c.getValue();
 			configMap.put(key, value);
 		}
+		logger.info("Successfully Loaded " + configMap.size() + " items into the properties config file");
 	}
 
 	public MarketDataConfigManager()
@@ -39,7 +44,8 @@ public class MarketDataConfigManager
 			loadConfigAsMap();
 		} catch (ConfigurationException e)
 		{
-			e.printStackTrace();
+			logger.error("Error Loading XMLConfiguration for the properties file = " + defaultConfigPath);
+			logger.error("The stack Trace is dumped below" + e.getStackTrace().toString());
 		}
 	}
 
@@ -52,7 +58,8 @@ public class MarketDataConfigManager
 			loadConfigAsMap();
 		} catch (ConfigurationException e)
 		{
-			e.printStackTrace();
+			logger.error("Error Loading XMLConfiguration for the properties file = " + configFilePath);
+			logger.error("The stack Trace is dumped below" + e.getStackTrace().toString());
 		}
 	}
 

@@ -11,10 +11,14 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.marketdataclient.ICICIResultParser.exchangeInfo;
 
 public class ICICIPrices extends LivePrices
 {
+	final static Logger logger = LogManager.getLogger(ICICIPrices.class);	
 	private static final String ICICI_QUOTEBASE_URL = "http://getquote.icicidirect.com/trading_stock_quote.aspx?Symbol=";
 	private String symbol;
 	String urlString = ICICI_QUOTEBASE_URL;
@@ -188,8 +192,7 @@ public class ICICIPrices extends LivePrices
 				b = new BufferedReader(new FileReader(f));
 			} catch (FileNotFoundException e)
 			{
-				System.out.println("Failed to get the config file. please verify the below path");
-				System.out.println(filePath);
+				logger.info("Failed to get the config file. please verify the path " + filePath + ". Exiting with failure code = 1.");
 				System.exit(1);
 			}
 			String readLine = "";
@@ -213,7 +216,8 @@ public class ICICIPrices extends LivePrices
 				}
 			} catch (IOException e)
 			{
-				System.out.println("Error loading the config file. returning empty array");
+				logger.error("Error loading the config file " + filePath + ".Without this file live stream can not be parsed or processed. Exiting with failure code = 1.");
+				System.exit(1);
 			}
 
 			try
