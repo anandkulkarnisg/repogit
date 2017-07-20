@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="jar/commons-collections-3.2.2/commons-collections-3.2.2.jar"/>
 	<classpathentry kind="lib" path="jar/apache-log4j-2.8.2-bin/log4j-api-2.8.2.jar"/>
 	<classpathentry kind="lib" path="jar/apache-log4j-2.8.2-bin/log4j-core-2.8.2.jar"/>
+	<classpathentry kind="lib" path="jar/kdb-java-c/c.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

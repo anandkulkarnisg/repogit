@@ -7,16 +7,38 @@ import org.apache.logging.log4j.Logger;
 
 import com.marketdataclient.ICICIResultParser.exchangeInfo;
 
-public class ICICIWorkerThread implements Runnable
+public class ICICIWorker implements Runnable
 {
 	private String stockName;
 	static AtomicInteger atomicInteger = new AtomicInteger(0);
 	static boolean printTickResults = true;
 	static boolean isNSE = false;
 	static boolean isBSE = false;
+	static long tickSequenceLimit = 10000;
+	static int cycleSleepDuration = 0;
 
-	final static Logger logger = LogManager.getLogger(ICICIWorkerThread.class);
-	
+	public static int getCycleSleepDuration()
+	{
+		return cycleSleepDuration;
+	}
+
+	public static void setCycleSleepDuration(int cycleSleepDuration)
+	{
+		ICICIWorker.cycleSleepDuration = cycleSleepDuration;
+	}
+
+	public static long getTickSequenceLimit()
+	{
+		return tickSequenceLimit;
+	}
+
+	public static void setTickSequenceLimit(long tickSequenceLimit)
+	{
+		ICICIWorker.tickSequenceLimit = tickSequenceLimit;
+	}
+
+	final static Logger logger = LogManager.getLogger(ICICIWorker.class);
+
 	public static boolean isBSE()
 	{
 		return isBSE;
@@ -24,7 +46,7 @@ public class ICICIWorkerThread implements Runnable
 
 	public static void setBSE(boolean isBSE)
 	{
-		ICICIWorkerThread.isBSE = isBSE;
+		ICICIWorker.isBSE = isBSE;
 	}
 
 	public static boolean isNSE()
@@ -34,7 +56,7 @@ public class ICICIWorkerThread implements Runnable
 
 	public static void setNSE(boolean isNSE)
 	{
-		ICICIWorkerThread.isNSE = isNSE;
+		ICICIWorker.isNSE = isNSE;
 	}
 
 	public static boolean isPrintTickResults()
@@ -44,10 +66,10 @@ public class ICICIWorkerThread implements Runnable
 
 	public static void setPrintTickResults(boolean printTickResults)
 	{
-		ICICIWorkerThread.printTickResults = printTickResults;
+		ICICIWorker.printTickResults = printTickResults;
 	}
 
-	public ICICIWorkerThread(String name)
+	public ICICIWorker(String name)
 	{
 		stockName = name;
 		setAtomicInteger(atomicInteger.get() + 1);
@@ -60,7 +82,7 @@ public class ICICIWorkerThread implements Runnable
 
 	public static void setAtomicInteger(int atomicInteger)
 	{
-		ICICIWorkerThread.atomicInteger.set(atomicInteger);
+		ICICIWorker.atomicInteger.set(atomicInteger);
 	}
 
 	static boolean allThreadsFinished()
@@ -75,8 +97,8 @@ public class ICICIWorkerThread implements Runnable
 	public void run()
 	{
 		ICICIPrices priceItem = new ICICIPrices(stockName);
-		int counter = 0;
-		while (counter < 1000)
+		long counter = 0;
+		while (counter < getTickSequenceLimit())
 		{
 			Map<String, Object> streamResultMap = priceItem.streamPrices();
 			if (!streamResultMap.isEmpty())
@@ -100,7 +122,16 @@ public class ICICIWorkerThread implements Runnable
 					}
 				}
 			} else
-				counter = 1000;
+			{
+				counter = getTickSequenceLimit();
+			}
+
+			try
+			{
+				Thread.sleep(cycleSleepDuration);
+			} catch (InterruptedException e)
+			{
+			}
 			++counter;
 		}
 

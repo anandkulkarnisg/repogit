@@ -7,16 +7,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.marketdataclient.ICICIResultParser.exchangeInfo;
+import com.marketdataclient.kdbfeedhandler.ICICIKdbTickPublisher;
+
+import kx.c.KException;
 
 public class Main
 {
-
-	public enum executionType
+	private enum executionType
 	{
 		Threaded, Serial
 	}
@@ -29,10 +32,10 @@ public class Main
 		// Kick Start the application.
 		logger.info("Starting the MarketDataClient Application.");
 
-		// First load the stock symbol names from a Seperate Config file.
+		// First load the stock symbol names from a Separate Configuration file.
 		String[] stockItems = loadEquitySymbolsFromConfigFile();
 
-		// Load the properties config file for the marketDataConfig.
+		// Load the properties Configuration file for the marketDataConfig.
 		MarketDataConfigManager marketDataConfig = new MarketDataConfigManager();
 
 		String executionMode = marketDataConfig.getConfigMap().get("executionMode");
@@ -51,11 +54,26 @@ public class Main
 		Boolean tickDisplayMode = Boolean.getBoolean(marketDataConfig.getConfigMap().get("displayMode"));
 		ExecutorService executor = Executors.newFixedThreadPool(stockItems.length);
 
-		ICICIWorkerThread.setPrintTickResults(tickDisplayMode);
+		ICICIWorker.setPrintTickResults(tickDisplayMode);
 		Boolean NSEStatus = Boolean.parseBoolean(marketDataConfig.getConfigMap().get("NSEStatus"));
 		Boolean BSEStatus = Boolean.parseBoolean(marketDataConfig.getConfigMap().get("BSEStatus"));
-		ICICIWorkerThread.setNSE(NSEStatus);
-		ICICIWorkerThread.setBSE(BSEStatus);
+		ICICIWorker.setNSE(NSEStatus);
+		ICICIWorker.setBSE(BSEStatus);
+
+		Long tickSequenceLimit = Long.parseLong(marketDataConfig.getConfigMap().get("maxTickLimit"));
+		ICICIWorker.setTickSequenceLimit(tickSequenceLimit);
+
+		int cycleSleepDuration = Integer.parseInt(marketDataConfig.getConfigMap().get("cycleSleepDurationMilliSecs"));
+		ICICIWorker.setCycleSleepDuration(cycleSleepDuration);
+
+		// Now create a arrayBlockingQueue of size number of stock items
+		// multiplied by maxTickLimit to make sure we have enough size to cover
+		// at all times.
+		// More aggressive strategy may be to allocate only around half of the
+		// size of above to save on memory.
+
+		int queueSize = (tickSequenceLimit.intValue() * stockItems.length) / 2;
+		TickDataQueue.setTickDataQueue(new ArrayBlockingQueue<String>(queueSize));
 
 		logger.info("Set the below configuration for the worker threaded. The tick display mode is set to " + tickDisplayMode.toString() + ".NSE Publishing is set to " + NSEStatus
 				+ ".BSE Publishing status is set to " + BSEStatus + ".");
@@ -65,12 +83,31 @@ public class Main
 
 		for (int i = 0; i < stockItems.length; i++)
 		{
-			Runnable worker = new ICICIWorkerThread(stockItems[i]);
+			Runnable worker = new ICICIWorker(stockItems[i]);
 			executor.execute(worker);
 		}
 
-		while (!ICICIWorkerThread.allThreadsFinished())
+		// Start the KDB processing thread via below.
+		ICICIKdbTickPublisher kdbTickPublisher = new ICICIKdbTickPublisher(2);
+		kdbTickPublisher.start();
+
+		while (!ICICIWorker.allThreadsFinished())
 		{
+			try
+			{
+				Thread.sleep(1000);
+				logger.info("There are " + TickDataQueue.getTickDataQueue().size() + " Items in the queue waiting to be processed");
+			} catch (InterruptedException e)
+			{
+
+			}
+		}
+
+		logger.info("All stock publisher threads have finished.");
+
+		while (TickDataQueue.getTickDataQueue().size() > 0)
+		{
+			logger.info("There are still " + TickDataQueue.getTickDataQueue().size() + " Items in the queue waiting to be processed");
 			try
 			{
 				Thread.sleep(1000);
@@ -79,7 +116,12 @@ public class Main
 
 			}
 		}
+
+		// Signal to stop the KDB publishing threads now.
+		ICICIKdbTickPublisher.setKeepPublishing(false);
 		executor.shutdownNow();
+		kdbTickPublisher.getExecutor().shutdownNow();
+		
 	}
 
 	static private void runInSerialMode(String[] stockItems, MarketDataConfigManager marketDataConfig)

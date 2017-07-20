@@ -18,7 +18,7 @@ import com.marketdataclient.ICICIResultParser.exchangeInfo;
 
 public class ICICIPrices extends LivePrices
 {
-	final static Logger logger = LogManager.getLogger(ICICIPrices.class);	
+	final static Logger logger = LogManager.getLogger(ICICIPrices.class);
 	private static final String ICICI_QUOTEBASE_URL = "http://getquote.icicidirect.com/trading_stock_quote.aspx?Symbol=";
 	private String symbol;
 	String urlString = ICICI_QUOTEBASE_URL;
@@ -225,8 +225,8 @@ public class ICICIPrices extends LivePrices
 				b.close();
 			} catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Error while closing the stream for the config file " + filePath + ". Please verify what happened here.");
+				logger.warn(e.getStackTrace().toString());
 			}
 		}
 	}

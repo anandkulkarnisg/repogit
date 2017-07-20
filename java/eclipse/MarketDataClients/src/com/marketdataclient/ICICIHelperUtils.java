@@ -1,5 +1,7 @@
 package com.marketdataclient;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +13,7 @@ public class ICICIHelperUtils
 
 	final static Logger logger = LogManager.getLogger(ICICIHelperUtils.class);
 
-	static void printResults(Map<String, Object> streamResultMap, String stockName, int counter)
+	static void printResults(Map<String, Object> streamResultMap, String stockName, long counter)
 	{
 		System.out.println("---------------------------- " + stockName + ", tick sequence = " + counter + "START ---------------------------------");
 		for (Map.Entry<String, Object> entry : streamResultMap.entrySet())
@@ -20,10 +22,11 @@ public class ICICIHelperUtils
 		System.out.println("Finished tick count sequence =" + counter);
 	}
 
-	static void csvFormatResultPrinter(ICICIResultParser resultParser, String stockName, int counter)
+	static void csvFormatResultPrinter(ICICIResultParser resultParser, String stockName, long counter)
 	{
 
 		String csvResult = null;
+		boolean overAllParseStatus = false;
 
 		try
 		{
@@ -55,10 +58,21 @@ public class ICICIHelperUtils
 			long dayVolume = resultParser.getDayVolume();
 
 			// Test all the Date items.
-			LocalDate valueDate = resultParser.getValueDate();
+			LocalDate dt = resultParser.getValueDate();
+			Date valueDate = Date.valueOf(dt.toString());
 
-			// Lastly the Time as a string.
-			String lastTradedTime = resultParser.getLastTradedTime();
+			Time lastTradedTime;
+
+			// Lastly the Time as we need it. Currently milliseconds from BSE
+			// does not work well to java.sql.Time conversion.
+			if (resultParser.getExchange().toString().equals("NSE"))
+				lastTradedTime = Time.valueOf(resultParser.getLastTradedTime());
+			else
+			{
+				String result = resultParser.getLastTradedTime();
+				result = result.substring(0, result.length() - 4);
+				lastTradedTime = Time.valueOf(result);
+			}
 
 			// The resulting CSV string is built below.
 			csvResult = counter + "," + exchangeName + "," + stockName + "," + highPrice + "," + lifeTimeHighPrice + "," + lifeTimeLowPrice + "," + dayHighPrice + ","
@@ -66,17 +80,29 @@ public class ICICIHelperUtils
 					+ prevDayClosePrice + "," + +dayLowPrice + "," + highPriceRange + "," + lowPriceRange + "," + absolutePriceChange + "," + percentPriceChange + ","
 					+ bestBidQuantity + "," + bestAskQuantity + "," + dayVolume + "," + valueDate + "," + lastTradedTime;
 
+			overAllParseStatus = true;
+
 		} catch (Exception e)
 		{
 			logger.error(
 					"Caught exception while parsing and processing data for symbol = " + stockName + ", The tick sequence was at " + counter + "The exception details are below");
 			logger.error(e.getStackTrace().toString());
+			e.printStackTrace();
 		}
 
-		logger.info("Successfully parsed and published the data for symbol = " + stockName + ", The tick sequence was at " + counter + ".");
-		// logger.info(csvResult);
-		// System.out.println(csvResult);
-
+		if (overAllParseStatus)
+		{
+			try
+			{
+				TickDataQueue.getTickDataQueue().add(csvResult);
+				logger.info("Successfully parsed and published the data for symbol = " + stockName + ", The tick sequence was at " + counter + ".");
+			} catch (Exception e)
+			{
+				logger.warn("Please verify that TickDataQueue status. It seems pushing data to this queue produced an exception. The current of the queue = "
+						+ TickDataQueue.getTickDataQueue().size());
+				logger.warn("The capacity of the TickDataQueue is =" + TickDataQueue.getTickDataQueue().remainingCapacity());
+			}
+		}
 	}
 
 	static void printCsvHeader()
