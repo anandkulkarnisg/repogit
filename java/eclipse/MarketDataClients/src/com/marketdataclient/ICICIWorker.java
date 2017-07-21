@@ -16,6 +16,22 @@ public class ICICIWorker implements Runnable
 	static boolean isBSE = false;
 	static long tickSequenceLimit = 10000;
 	static int cycleSleepDuration = 0;
+	public enum tickDestination
+	{
+		STDOUT, KDB
+	}
+
+	private static tickDestination destination;
+	
+	public static tickDestination getDestination()
+	{
+		return destination;
+	}
+
+	public static void setDestination(tickDestination destination)
+	{
+		ICICIWorker.destination = destination;
+	}
 
 	public static int getCycleSleepDuration()
 	{

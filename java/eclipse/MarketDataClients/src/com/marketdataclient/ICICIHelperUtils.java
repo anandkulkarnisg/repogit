@@ -8,6 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 
+import com.marketdataclient.ICICIWorker.tickDestination;
+
 public class ICICIHelperUtils
 {
 
@@ -92,15 +94,26 @@ public class ICICIHelperUtils
 
 		if (overAllParseStatus)
 		{
-			try
+
+			if (ICICIWorker.getDestination() == tickDestination.STDOUT)
 			{
-				TickDataQueue.getTickDataQueue().add(csvResult);
-				logger.info("Successfully parsed and published the data for symbol = " + stockName + ", The tick sequence was at " + counter + ".");
-			} catch (Exception e)
+				System.out.println(csvResult);
+				logger.info("Successfully parsed and printed to stdout the data for symbol = " + stockName + ", The tick sequence was at " + counter + ".");
+			}
+
+			if (ICICIWorker.getDestination() == tickDestination.KDB)
 			{
-				logger.warn("Please verify that TickDataQueue status. It seems pushing data to this queue produced an exception. The current of the queue = "
-						+ TickDataQueue.getTickDataQueue().size());
-				logger.warn("The capacity of the TickDataQueue is =" + TickDataQueue.getTickDataQueue().remainingCapacity());
+
+				try
+				{
+					TickDataQueue.getTickDataQueue().add(csvResult);
+					logger.info("Successfully parsed and published the data for symbol = " + stockName + ", The tick sequence was at " + counter + ".");
+				} catch (Exception e)
+				{
+					logger.warn("Please verify that TickDataQueue status. It seems pushing data to this queue produced an exception. The current of the queue = "
+							+ TickDataQueue.getTickDataQueue().size());
+					logger.warn("The capacity of the TickDataQueue is =" + TickDataQueue.getTickDataQueue().remainingCapacity());
+				}
 			}
 		}
 	}

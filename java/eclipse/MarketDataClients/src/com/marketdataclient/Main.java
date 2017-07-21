@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.marketdataclient.ICICIResultParser.exchangeInfo;
+import com.marketdataclient.ICICIWorker.tickDestination;
 import com.marketdataclient.kdbfeedhandler.ICICIKdbTickPublisher;
 
 import kx.c.KException;
@@ -59,7 +60,8 @@ public class Main
 		Boolean BSEStatus = Boolean.parseBoolean(marketDataConfig.getConfigMap().get("BSEStatus"));
 		ICICIWorker.setNSE(NSEStatus);
 		ICICIWorker.setBSE(BSEStatus);
-
+		ICICIWorker.setDestination(tickDestination.valueOf(marketDataConfig.getConfigMap().get("resultWriterDestination")));
+		
 		Long tickSequenceLimit = Long.parseLong(marketDataConfig.getConfigMap().get("maxTickLimit"));
 		ICICIWorker.setTickSequenceLimit(tickSequenceLimit);
 
@@ -68,11 +70,11 @@ public class Main
 
 		// Now create a arrayBlockingQueue of size number of stock items
 		// multiplied by maxTickLimit to make sure we have enough size to cover
-		// at all times.
-		// More aggressive strategy may be to allocate only around half of the
-		// size of above to save on memory.
+		// at all times. More aggressive strategy may be to allocate only around
+		// half of the size of above to save on memory.
 
-		int queueSize = (tickSequenceLimit.intValue() * stockItems.length) / 2;
+		float capacityAdjFactor = Float.parseFloat(marketDataConfig.getConfigMap().get("queueCapacityAdjFactor"));
+		int queueSize = (int) ((tickSequenceLimit.intValue() * stockItems.length) * capacityAdjFactor);
 		TickDataQueue.setTickDataQueue(new ArrayBlockingQueue<String>(queueSize));
 
 		logger.info("Set the below configuration for the worker threaded. The tick display mode is set to " + tickDisplayMode.toString() + ".NSE Publishing is set to " + NSEStatus
@@ -88,7 +90,11 @@ public class Main
 		}
 
 		// Start the KDB processing thread via below.
-		ICICIKdbTickPublisher kdbTickPublisher = new ICICIKdbTickPublisher(2);
+		int kdbPublisherThreads = Integer.parseInt(marketDataConfig.getConfigMap().get("KdbPublishThreads"));
+		String kdbServer = marketDataConfig.getConfigMap().get("kdbServer");
+		int kdbPort = Integer.parseInt(marketDataConfig.getConfigMap().get("kdbPort"));
+
+		ICICIKdbTickPublisher kdbTickPublisher = new ICICIKdbTickPublisher(kdbPublisherThreads, kdbServer, kdbPort);
 		kdbTickPublisher.start();
 
 		while (!ICICIWorker.allThreadsFinished())
@@ -121,7 +127,7 @@ public class Main
 		ICICIKdbTickPublisher.setKeepPublishing(false);
 		executor.shutdownNow();
 		kdbTickPublisher.getExecutor().shutdownNow();
-		
+
 	}
 
 	static private void runInSerialMode(String[] stockItems, MarketDataConfigManager marketDataConfig)

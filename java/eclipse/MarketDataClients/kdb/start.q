@@ -27,11 +27,6 @@
 /	public final Date date;
 /	public final Time lastTradedTime;
 
-/ \l traceusage.q
-
-/trade:([] tickSequence:`int$(); exchangeName:`symbol$(); sym:`symbol$(); highPrice:`float$(); lifeTimeHighPrice:`float$(); lifeTimeLowPrice:`float$(); dayHighPrice:`float$(); lastTradedPrice:`float$(); week52HighPrice:`float$(); week52LowPrice:`float$(); bestBidPrice:`float$(); bestAskPrice:`float$(); dayOpenPrice:`float$(); dayClosePrice:`float$(); prevDayClosePrice:`float$(); dayLowPrice:`float$(); highPriceRange:`float$(); lowPriceRange:`float$(); absolutePriceChange:`float$(); percentPriceChange:`float$(); bestBidQuantity:`long$(); bestAskQuantity:`long$(); dayVolume:`long$(); date:`date$(); lastTradedTime:`time$());
-/.u.upd:insert;   
-
 trade:([] tickSequence:`int$(); exchangeName:`symbol$(); sym:`symbol$();highPrice:`float$(); lifeTimeHighPrice:`float$(); lifeTimeLowPrice:`float$(); dayHighPrice:`float$(); lastTradedPrice:`float$(); week52HighPrice:`float$(); week52LowPrice:`float$(); bestBidPrice:`float$(); bestAskPrice:`float$(); dayOpenPrice:`float$(); dayClosePrice:`float$(); prevDayClosePrice:`float$(); dayLowPrice:`float$(); highPriceRange:`float$(); lowPriceRange:`float$(); absolutePriceChange:`float$(); percentPriceChange:`float$(); bestBidQuantity:`long$(); bestAskQuantity:`long$(); dayVolume:`long$(); date:`date$(); lastTradedTime:`time$());
 .u.upd:insert;
 
