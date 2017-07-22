@@ -139,4 +139,25 @@ public class YahooPrices
 	{
 		return (lastHashCode);
 	}
+	
+	private void runYahooDemo()
+	{
+		YahooPrices samplePriceItem = new YahooPrices("SGDINR=X", "nl1abb6a5");
+		int prevHashCode = 0, hashCode = 0;
+		int count = 1;
+		while (count <= 0)
+		{
+			String[] result = samplePriceItem.getYahooPrices();
+			hashCode = samplePriceItem.getHashCode();
+			if (hashCode != prevHashCode)
+			{
+				System.out.println(result[0] + "|" + result[1] + "|" + result[2] + "|" + result[3] + "|" + result[4] + "|" + result[5]);
+				System.out.println("HashCode is = " + hashCode);
+				prevHashCode = hashCode;
+			}
+			--count;
+		}
+	}
+	
+	
 }

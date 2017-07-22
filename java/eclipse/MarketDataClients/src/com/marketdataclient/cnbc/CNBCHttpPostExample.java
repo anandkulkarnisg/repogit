@@ -11,10 +11,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.net.HttpURLConnection;
 
+// Useful Tips : Gold seems to have 18 contract prices with up front Gold future trading at @GC.1 all the way till @GC.18
+// Connection reuse in http post via HttpUrlConnection : read these articles on stack overflow.
+// https://stackoverflow.com/questions/16256681/how-to-reuse-httpurlconnection
+// https://stackoverflow.com/questions/3304006/persistent-httpurlconnection-in-java?noredirect=1&lq=1
+
 public class CNBCHttpPostExample
 {
 
-	public void httpPost()
+	public void httpPost(String cnbcSymbol)
 	{
 		String url = "http://quote.cnbc.com/quote-html-webservice/quote.htm";
 		URL obj = null;
@@ -68,7 +73,7 @@ public class CNBCHttpPostExample
 		String urlParameters = "";
 
 		Map<String, String> postParametersMap = new HashMap<String, String>();
-		postParametersMap.put("symbols", "AAPL");
+		postParametersMap.put("symbols", cnbcSymbol);
 		postParametersMap.put("symbolType", "symbol");
 		postParametersMap.put("requestMethod", "fast");
 		postParametersMap.put("exthrs", "1");
@@ -128,15 +133,15 @@ public class CNBCHttpPostExample
 		try
 		{
 			responseCode = con.getResponseCode();
-			System.out.println("Response Content : " + con.getResponseMessage());
+//			System.out.println("Response Content : " + con.getResponseMessage());
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Post parameters : " + urlParameters);
-		System.out.println("Response Code : " + responseCode);
+//		System.out.println("\nSending 'POST' request to URL : " + url);
+//		System.out.println("Post parameters : " + urlParameters);
+//		System.out.println("Response Code : " + responseCode);
 
 		BufferedReader in = null;
 		try
