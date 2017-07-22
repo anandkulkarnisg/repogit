@@ -84,7 +84,7 @@ void extraExamplesDemo() {
 	// Attempt to delete this node now.
 	bool deleteStatus = testLinkedList.deleteNode(nodeToDelete, false);
 	if (deleteStatus)
-		cout << "Item = " << deleteVal << " Was successfull" << endl;
+		cout << "Item = " << deleteVal << " Was successful" << endl;
 	cout << "After" << endl;
 	testLinkedList.print();
 	cout << "size = " << testLinkedList.size() << endl;
@@ -94,7 +94,7 @@ void extraExamplesDemo() {
 	// Attempt to delete this node now.
 	deleteStatus = testLinkedList.deleteNode(nodeToDelete, false);
 	if (deleteStatus)
-		cout << "Item = " << deleteVal << " Was successfull" << endl;
+		cout << "Item = " << deleteVal << " Was successful" << endl;
 	else
 		cout << "Item = " << deleteVal << " Was Fail" << endl;
 	cout << "After" << endl;
@@ -106,7 +106,7 @@ void extraExamplesDemo() {
 		nodeToDelete = testLinkedList.getNodeByVal(iter);
 		deleteStatus = testLinkedList.deleteNode(nodeToDelete, false);
 		if (deleteStatus)
-			cout << "Item = " << iter << " Was successfull" << endl;
+			cout << "Item = " << iter << " Was successful" << endl;
 		else
 			cout << "Item = " << iter << " Was Fail" << endl;
 	}
@@ -120,7 +120,7 @@ void extraExamplesDemo() {
 		nodeToDelete = testLinkedList.getNodeByVal(iter);
 		deleteStatus = testLinkedList.deleteNode(nodeToDelete, true);
 		if (deleteStatus)
-			cout << "Item = " << iter << " Was successfull" << endl;
+			cout << "Item = " << iter << " Was successful" << endl;
 		else
 			cout << "Item = " << iter << " Was Fail" << endl;
 	}
@@ -163,7 +163,7 @@ void deleteatEndTestDemo() {
 			SingleLinkedListNode<int>* nodeToDelete = testLinkedList.getNodeByVal(iter);
 			bool deleteStatus = testLinkedList.deleteNode(nodeToDelete, modeIter);
 			if (deleteStatus)
-				cout << "Item = " << iter << " Was successfull" << endl;
+				cout << "Item = " << iter << " Was successful" << endl;
 			else
 				cout << "Item = " << iter << " Was Fail" << endl;
 		}
@@ -179,7 +179,7 @@ void deleteatEndTestDemo() {
 			SingleLinkedListNode<int>* nodeToDelete = testLinkedList.getNodeByVal(iter);
 			bool deleteStatus = testLinkedList.deleteNode(nodeToDelete, modeIter);
 			if (deleteStatus)
-				cout << "Item = " << iter << " Was successfull" << endl;
+				cout << "Item = " << iter << " Was successful" << endl;
 			else
 				cout << "Item = " << iter << " Was Fail" << endl;
 		}

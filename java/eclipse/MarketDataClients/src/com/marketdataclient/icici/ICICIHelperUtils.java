@@ -1,4 +1,4 @@
-package com.marketdataclient;
+package com.marketdataclient.icici;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -8,14 +8,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 
-import com.marketdataclient.ICICIWorker.tickDestination;
+import com.marketdataclient.icici.ICICIWorker.tickDestination;
+import com.marketdataclient.kdbfeedhandler.TickDataQueue;
 
 public class ICICIHelperUtils
 {
 
 	final static Logger logger = LogManager.getLogger(ICICIHelperUtils.class);
 
-	static void printResults(Map<String, Object> streamResultMap, String stockName, long counter)
+	public static void printResults(Map<String, Object> streamResultMap, String stockName, long counter)
 	{
 		System.out.println("---------------------------- " + stockName + ", tick sequence = " + counter + "START ---------------------------------");
 		for (Map.Entry<String, Object> entry : streamResultMap.entrySet())
@@ -24,7 +25,7 @@ public class ICICIHelperUtils
 		System.out.println("Finished tick count sequence =" + counter);
 	}
 
-	static void csvFormatResultPrinter(ICICIResultParser resultParser, String stockName, long counter)
+	public static void csvFormatResultPrinter(ICICIResultParser resultParser, String stockName, long counter)
 	{
 
 		String csvResult = null;
@@ -118,7 +119,7 @@ public class ICICIHelperUtils
 		}
 	}
 
-	static void printCsvHeader()
+	public static void printCsvHeader()
 	{
 		// System.out.println(
 		// "tickSequence,exchangeName,stockName,highPrice,lifeTimeHighPrice,lifeTimeLowPrice,dayHighPrice,lastTradedPrice,week52HighPrice,week52LowPrice,bestBidPrice,bestAskPrice,dayOpenPrice,dayClosePrice,prevDayClosePrice,dayLowPrice,highPriceRange,lowPriceRange,absolutePriceChange,percentPriceChange,bestBidQuantity,bestAskQuantity,dayVolume,date,lastTradedTime");

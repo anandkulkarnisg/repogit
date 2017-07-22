@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../BinaryTree.cpp \
 ../bubblesort.cpp \
 ../heapsort.cpp \
 ../insertionsort.cpp \
@@ -16,6 +17,7 @@ CPP_SRCS += \
 ../sortutils.cpp 
 
 OBJS += \
+./BinaryTree.o \
 ./bubblesort.o \
 ./heapsort.o \
 ./insertionsort.o \
@@ -28,6 +30,7 @@ OBJS += \
 ./sortutils.o 
 
 CPP_DEPS += \
+./BinaryTree.d \
 ./bubblesort.d \
 ./heapsort.d \
 ./insertionsort.d \

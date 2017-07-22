@@ -1,4 +1,4 @@
-package com.marketdataclient;
+package com.marketdataclient.yahoo;
 
 import java.net.*;
 import java.util.ArrayList;

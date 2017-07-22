@@ -1,4 +1,4 @@
-package com.marketdataclient;
+package com.marketdataclient.icici;
 
 import java.util.Map;
 import org.joda.time.LocalDate;

@@ -1,4 +1,4 @@
-package com.marketdataclient;
+package com.marketdataclient.icici;
 
 import java.io.BufferedReader;
 import java.io.IOException;

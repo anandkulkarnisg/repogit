@@ -1,8 +1,7 @@
-package com.marketdataclient;
+package com.marketdataclient.configmanager;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.ConfigurationNode;
@@ -62,5 +61,97 @@ public class MarketDataConfigManager
 			logger.error("The stack Trace is dumped below" + e.getStackTrace().toString());
 		}
 	}
+
+	public int getIntegerConfig(String key, int defaultValue)
+	{
+		String result = getConfigMap().get(key);
+		int returnResult;
+		if (result == null)
+		{
+			return (defaultValue);
+		} else
+		{
+			try
+			{
+				returnResult = Integer.parseInt(result);
+			} catch (NumberFormatException e)
+			{
+				return (defaultValue);
+			}
+		}
+		return (returnResult);
+	}
+
+	public double getDoubleConfig(String key, double defaultValue)
+	{
+		String result = getConfigMap().get(key);
+		double returnResult;
+		if (result == null)
+		{
+			return (defaultValue);
+		} else
+		{
+			try
+			{
+				returnResult = Double.parseDouble(result);
+			} catch (NumberFormatException e)
+			{
+				return (defaultValue);
+			}
+		}
+		return (returnResult);
+	}
+
+	public boolean getBooleanConfig(String key, boolean defaultValue)
+	{
+		String result = getConfigMap().get(key);
+		boolean returnResult;
+		if (result == null)
+		{
+			return (defaultValue);
+		} else
+		{
+			returnResult = Boolean.parseBoolean(result);
+		}
+		return (returnResult);
+	}
+
+	public long getLongConfig(String key, long defaultValue)
+	{
+		String result = getConfigMap().get(key);
+		long returnResult;
+		if (result == null)
+		{
+			return (defaultValue);
+		} else
+		{
+			try
+			{
+				returnResult = Long.parseLong(result);
+			} catch (NumberFormatException e)
+			{
+				return (defaultValue);
+			}
+		}
+		return (returnResult);
+	}
+
+	public String getStringConfig(String key, String defaultValue)
+	{
+		String result = getConfigMap().get(key);
+		if (result == null)
+		{
+			return (defaultValue);
+		} else
+		{
+			return (result);
+		}
+	}
+
+	// public static class StringBar extends Bar<String> {
+	// public String get() {
+	// return "";
+	// }
+	// }
 
 }

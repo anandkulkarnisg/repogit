@@ -39,7 +39,6 @@ public class ICICITickEvent
 			double prevDayClosePrice, double dayLowPrice, double highPriceRange, double lowPriceRange, double absolutePriceChange, double percentPriceChange, long bestBidQuantity,
 			long bestAskQuantity, long dayVolume, Date date, Time lastTradedTime)
 	{
-		super();
 		this.tickSequence = tickSequence;
 		this.exchangeName = exchangeName;
 		this.sym = sym;

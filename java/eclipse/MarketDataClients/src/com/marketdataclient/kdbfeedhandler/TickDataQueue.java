@@ -1,4 +1,4 @@
-package com.marketdataclient;
+package com.marketdataclient.kdbfeedhandler;
 
 import java.util.concurrent.BlockingQueue;
 

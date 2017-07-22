@@ -12,11 +12,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.marketdataclient.ICICIResultParser.exchangeInfo;
-import com.marketdataclient.ICICIWorker.tickDestination;
+import com.marketdataclient.icici.ICICIResultParser.exchangeInfo;
+import com.marketdataclient.icici.ICICIWorker.tickDestination;
+import com.marketdataclient.cnbc.CNBCHttpPostExample;
+import com.marketdataclient.configmanager.MarketDataConfigManager;
+import com.marketdataclient.icici.ICICIHelperUtils;
+import com.marketdataclient.icici.ICICIPrices;
+import com.marketdataclient.icici.ICICIResultParser;
+import com.marketdataclient.icici.ICICIWorker;
 import com.marketdataclient.kdbfeedhandler.ICICIKdbTickPublisher;
-
-import kx.c.KException;
+import com.marketdataclient.kdbfeedhandler.TickDataQueue;
+import com.marketdataclient.yahoo.YahooPrices;
 
 public class Main
 {
@@ -32,14 +38,18 @@ public class Main
 
 		// Kick Start the application.
 		logger.info("Starting the MarketDataClient Application.");
+		
+		// Testing some CNBC HTTP post method for the cnbc real time quote website.
+		// CNBCHttpPostExample httpExample = new CNBCHttpPostExample();
+		// httpExample.httpPost();
+		// System.exit(1);		
 
 		// First load the stock symbol names from a Separate Configuration file.
 		String[] stockItems = loadEquitySymbolsFromConfigFile();
 
 		// Load the properties Configuration file for the marketDataConfig.
 		MarketDataConfigManager marketDataConfig = new MarketDataConfigManager();
-
-		String executionMode = marketDataConfig.getConfigMap().get("executionMode");
+		String executionMode = marketDataConfig.getStringConfig("executionMode", "Threaded");
 
 		if (executionMode.equals(executionType.Threaded.toString()))
 			runInThreadedMode(stockItems, marketDataConfig);
@@ -51,21 +61,21 @@ public class Main
 
 	static private void runInThreadedMode(String[] stockItems, MarketDataConfigManager marketDataConfig)
 	{
-
-		Boolean tickDisplayMode = Boolean.getBoolean(marketDataConfig.getConfigMap().get("displayMode"));
+		Boolean tickDisplayMode = marketDataConfig.getBooleanConfig("displayMode", false);
 		ExecutorService executor = Executors.newFixedThreadPool(stockItems.length);
 
 		ICICIWorker.setPrintTickResults(tickDisplayMode);
-		Boolean NSEStatus = Boolean.parseBoolean(marketDataConfig.getConfigMap().get("NSEStatus"));
-		Boolean BSEStatus = Boolean.parseBoolean(marketDataConfig.getConfigMap().get("BSEStatus"));
+		Boolean NSEStatus = marketDataConfig.getBooleanConfig("NSEStatus", true);
+		Boolean BSEStatus = marketDataConfig.getBooleanConfig("BSEStatus", true);
 		ICICIWorker.setNSE(NSEStatus);
 		ICICIWorker.setBSE(BSEStatus);
-		ICICIWorker.setDestination(tickDestination.valueOf(marketDataConfig.getConfigMap().get("resultWriterDestination")));
-		
-		Long tickSequenceLimit = Long.parseLong(marketDataConfig.getConfigMap().get("maxTickLimit"));
+		String resultDestination = marketDataConfig.getStringConfig("resultWriterDestination", "KDB");
+		ICICIWorker.setDestination(tickDestination.valueOf(resultDestination));
+
+		Long tickSequenceLimit = marketDataConfig.getLongConfig("maxTickLimit", 1000);
 		ICICIWorker.setTickSequenceLimit(tickSequenceLimit);
 
-		int cycleSleepDuration = Integer.parseInt(marketDataConfig.getConfigMap().get("cycleSleepDurationMilliSecs"));
+		int cycleSleepDuration = marketDataConfig.getIntegerConfig("cycleSleepDurationMilliSecs", 100);
 		ICICIWorker.setCycleSleepDuration(cycleSleepDuration);
 
 		// Now create a arrayBlockingQueue of size number of stock items
@@ -73,7 +83,7 @@ public class Main
 		// at all times. More aggressive strategy may be to allocate only around
 		// half of the size of above to save on memory.
 
-		float capacityAdjFactor = Float.parseFloat(marketDataConfig.getConfigMap().get("queueCapacityAdjFactor"));
+		double capacityAdjFactor = marketDataConfig.getDoubleConfig("queueCapacityAdjFactor", 0.5);
 		int queueSize = (int) ((tickSequenceLimit.intValue() * stockItems.length) * capacityAdjFactor);
 		TickDataQueue.setTickDataQueue(new ArrayBlockingQueue<String>(queueSize));
 
@@ -90,9 +100,9 @@ public class Main
 		}
 
 		// Start the KDB processing thread via below.
-		int kdbPublisherThreads = Integer.parseInt(marketDataConfig.getConfigMap().get("KdbPublishThreads"));
-		String kdbServer = marketDataConfig.getConfigMap().get("kdbServer");
-		int kdbPort = Integer.parseInt(marketDataConfig.getConfigMap().get("kdbPort"));
+		int kdbPublisherThreads = marketDataConfig.getIntegerConfig("KdbPublishThreads", 2);
+		String kdbServer = marketDataConfig.getStringConfig("kdbServer", "localhost");
+		int kdbPort = marketDataConfig.getIntegerConfig("kdbPort", 5000);
 
 		ICICIKdbTickPublisher kdbTickPublisher = new ICICIKdbTickPublisher(kdbPublisherThreads, kdbServer, kdbPort);
 		kdbTickPublisher.start();

@@ -28,3 +28,6 @@ L1:([] a:`x`y; b:10 20)
 
 meta trade
 trade
+select from trade where sym=`DLFLIM
+
+\\

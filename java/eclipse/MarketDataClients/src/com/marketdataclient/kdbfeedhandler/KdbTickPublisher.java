@@ -2,7 +2,7 @@ package com.marketdataclient.kdbfeedhandler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.marketdataclient.TickDataQueue;
+import com.marketdataclient.kdbfeedhandler.TickDataQueue;
 
 public class KdbTickPublisher implements Runnable
 {

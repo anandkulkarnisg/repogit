@@ -1,4 +1,4 @@
-package com.marketdataclient;
+package com.marketdataclient.icici;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.marketdataclient.ICICIResultParser.exchangeInfo;
+import com.marketdataclient.icici.ICICIResultParser.exchangeInfo;
 
 public class ICICIPrices extends LivePrices
 {
