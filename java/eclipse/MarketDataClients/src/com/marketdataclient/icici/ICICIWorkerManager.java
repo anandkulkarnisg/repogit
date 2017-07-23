@@ -4,12 +4,9 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import com.marketdataclient.Main;
-import com.marketdataclient.Main.executionType;
 import com.marketdataclient.configmanager.MarketDataConfigManager;
 import com.marketdataclient.icici.ICICIResultParser.exchangeInfo;
 import com.marketdataclient.icici.ICICIWorker.tickDestination;
@@ -18,6 +15,10 @@ import com.marketdataclient.kdbfeedhandler.TickDataQueue;
 
 public class ICICIWorkerManager
 {
+	private enum executionType
+	{
+		Threaded, Serial
+	}
 
 	final static Logger logger = LogManager.getLogger(Main.class);
 	private static MarketDataConfigManager config;
@@ -28,10 +29,10 @@ public class ICICIWorkerManager
 		return stocks;
 	}
 
-	public ICICIWorkerManager(MarketDataConfigManager configItem, String[] stockItems)
+	public ICICIWorkerManager(MarketDataConfigManager configItem, String[] symbolList)
 	{
 		config = configItem;
-		stocks = stockItems;
+		stocks = symbolList;
 	}
 
 	public void start()

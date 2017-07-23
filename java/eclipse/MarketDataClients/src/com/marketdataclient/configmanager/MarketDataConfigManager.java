@@ -1,5 +1,11 @@
 package com.marketdataclient.configmanager;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.configuration.ConfigurationException;
@@ -13,6 +19,18 @@ public class MarketDataConfigManager
 	private XMLConfiguration config;
 	private static final String defaultConfigPath = System.getProperty("user.dir") + "/resources/marketDataClientConfig.xml";
 	private static Map<String, String> configMap;
+	private static String configPrefix;
+	private static String configFilePath;
+
+	public static String getConfigFilePath()
+	{
+		return configFilePath;
+	}
+
+	public static String getConfigPrefix()
+	{
+		return configPrefix;
+	}
 
 	final static Logger logger = LogManager.getLogger(MarketDataConfigManager.class);
 
@@ -34,30 +52,27 @@ public class MarketDataConfigManager
 		logger.info("Successfully Loaded " + configMap.size() + " items into the properties config file");
 	}
 
-	public MarketDataConfigManager()
+	public MarketDataConfigManager(String configType)
 	{
+
+		configPrefix = configType;
 		try
 		{
-			config = new XMLConfiguration(defaultConfigPath);
+			String filePath = "";
+			if (!configType.isEmpty())
+			{
+				String patternFrom = "marketDataClientConfig.xml";
+				String patternTo = configType + "." + patternFrom;
+				filePath = defaultConfigPath.replaceAll(patternFrom, patternTo);
+			} else
+				filePath = defaultConfigPath;
+
+			config = new XMLConfiguration(filePath);
 			config.setValidating(true);
 			loadConfigAsMap();
 		} catch (ConfigurationException e)
 		{
 			logger.error("Error Loading XMLConfiguration for the properties file = " + defaultConfigPath);
-			logger.error("The stack Trace is dumped below" + e.getStackTrace().toString());
-		}
-	}
-
-	public MarketDataConfigManager(String configFilePath)
-	{
-		try
-		{
-			config = new XMLConfiguration(configFilePath);
-			config.setValidating(true);
-			loadConfigAsMap();
-		} catch (ConfigurationException e)
-		{
-			logger.error("Error Loading XMLConfiguration for the properties file = " + configFilePath);
 			logger.error("The stack Trace is dumped below" + e.getStackTrace().toString());
 		}
 	}
@@ -153,5 +168,57 @@ public class MarketDataConfigManager
 	// return "";
 	// }
 	// }
+
+	public String[] loadEquitySymbolsFromConfigFile()
+	{
+
+		BufferedReader b = null;
+		ArrayList<String> stockSymbols = new ArrayList<String>();
+		String filePath = System.getProperty("user.dir") + "/resources/" + configPrefix + ".eqsymbols.cfg";
+		File f = new File(filePath);
+		try
+		{
+			b = new BufferedReader(new FileReader(f));
+			logger.info("Successfully Loaded the config file at path = " + filePath);
+
+		} catch (FileNotFoundException e)
+		{
+			logger.error("Failed to get the config file. please verify the path = " + filePath);
+			logger.error("Exiting the Application");
+			System.exit(1);
+		}
+		String readLine = "";
+		try
+		{
+			while ((readLine = b.readLine()) != null)
+			{
+				if (!readLine.trim().isEmpty())
+					stockSymbols.add(readLine);
+			}
+		} catch (IOException e)
+		{
+			logger.warn("Error while reading the equity symbols config file. returning empty array");
+		}
+
+		try
+		{
+			b.close();
+		} catch (IOException e)
+		{
+			logger.error("Error closing the file stream for the equity symbols config file. Please verify");
+			logger.warn("The stack trace is as follows " + e.getStackTrace().toString());
+		}
+
+		if (stockSymbols.size() == 0)
+		{
+			logger.error("Can not load or find any stock symbols from config file. Exiting the application with failure status");
+			System.exit(1);
+		} else
+			logger.info("Successfully loaded " + stockSymbols.size() + " symbols from the config file.");
+
+		String[] stocksArray = new String[stockSymbols.size()];
+		stocksArray = stockSymbols.toArray(stocksArray);
+		return (stocksArray);
+	}
 
 }

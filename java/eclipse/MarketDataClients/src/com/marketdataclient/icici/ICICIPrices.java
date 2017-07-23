@@ -184,7 +184,7 @@ public class ICICIPrices extends LivePrices
 		synchronized (syncKey)
 		{
 			initialQuoteMap = new ConcurrentHashMap<String, Pair<Integer, Integer>>();
-			String filePath = System.getProperty("user.dir") + "/resources/eqconfig.cfg";
+			String filePath = System.getProperty("user.dir") + "/resources/icici.eqconfig.cfg";
 			BufferedReader b = null;
 			File f = new File(filePath);
 			try
