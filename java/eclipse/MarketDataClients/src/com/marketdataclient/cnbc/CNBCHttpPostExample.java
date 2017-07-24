@@ -1,14 +1,30 @@
 package com.marketdataclient.cnbc;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.net.HttpURLConnection;
 
 // Useful Tips : Gold seems to have 18 contract prices with up front Gold future trading at @GC.1 all the way till @GC.18
@@ -133,15 +149,16 @@ public class CNBCHttpPostExample
 		try
 		{
 			responseCode = con.getResponseCode();
-//			System.out.println("Response Content : " + con.getResponseMessage());
+			// System.out.println("Response Content : " +
+			// con.getResponseMessage());
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		System.out.println("\nSending 'POST' request to URL : " + url);
-//		System.out.println("Post parameters : " + urlParameters);
-//		System.out.println("Response Code : " + responseCode);
+		// System.out.println("\nSending 'POST' request to URL : " + url);
+		// System.out.println("Post parameters : " + urlParameters);
+		// System.out.println("Response Code : " + responseCode);
 
 		BufferedReader in = null;
 		try
@@ -157,12 +174,17 @@ public class CNBCHttpPostExample
 		}
 		String inputLine = null;
 		StringBuffer response = new StringBuffer();
+		String[] resultArray = new String[1000];
+		int i = 0;
 
 		try
 		{
 			while ((inputLine = in.readLine()) != null)
 			{
 				response.append(inputLine);
+				if (i != 0)
+					resultArray[i] = inputLine;
+				i++;
 				System.out.println(inputLine);
 			}
 		} catch (IOException e)
@@ -176,6 +198,63 @@ public class CNBCHttpPostExample
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		resultArray[0] = "<?xml version=\"1.0\"?>";
+		String resultXmlString = "";
+
+		for (int j = 0; j < i - 1; ++j)
+		{
+			resultXmlString += resultArray[j];
+			 System.out.println("i = " + j + " result = " + resultArray[j]);
+		}
+
+		System.out.println(resultXmlString);
+
+		try
+		{
+			//File fXmlFile = new File("/home/anand/repogit/java/eclipse/MarketDataClients/sample2.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			InputSource is = new InputSource(new StringReader(response.toString()));
+			//Document doc = dBuilder.parse(fXmlFile);
+			Document doc = dBuilder.parse(is);
+
+			// optional, but recommended
+			// read this -
+			// http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+			doc.getDocumentElement().normalize();
+
+			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+
+			NodeList nList = doc.getElementsByTagName("FastQuote");
+
+			System.out.println("----------------------------");
+
+			for (int temp = 0; temp < nList.getLength(); temp++)
+			{
+
+				Node nNode = nList.item(temp);
+
+				System.out.println("\nCurrent Element :" + nNode.getNodeName());
+
+				if (nNode.getNodeType() == Node.ELEMENT_NODE)
+				{
+
+					Element eElement = (Element) nNode;
+					
+					System.out.println("symbol : " + eElement.getElementsByTagName("symbol").item(0).getTextContent());
+					System.out.println("shortName : " + eElement.getElementsByTagName("shortName").item(0).getTextContent());
+					System.out.println("last : " + eElement.getElementsByTagName("last").item(0).getTextContent());
+					System.out.println("change : " + eElement.getElementsByTagName("change").item(0).getTextContent());
+					System.out.println("cacheServed : " + eElement.getElementsByTagName("cacheServed").item(0).getTextContent());
+					System.out.println("cacheTime : " + eElement.getElementsByTagName("cachedTime").item(0).getTextContent());
+
+				}
+			}
+		} catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 

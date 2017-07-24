@@ -23,9 +23,9 @@ public class Main
 
 		// Testing some CNBC HTTP post method for the cnbc real time quote
 		// website.
-		// CNBCHttpPostExample httpExample = new CNBCHttpPostExample();
-		// httpExample.httpPost("@GC.1");
-		// System.exit(1);
+		 CNBCHttpPostExample httpExample = new CNBCHttpPostExample();
+		 httpExample.httpPost("@GC.1");
+		 System.exit(1);
 			
 		// Load the properties Configuration file for the marketDataConfig.
 		MarketDataConfigManager marketDataConfig = new MarketDataConfigManager(args[0]);
