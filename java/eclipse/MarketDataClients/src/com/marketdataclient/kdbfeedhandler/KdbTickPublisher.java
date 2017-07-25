@@ -2,7 +2,8 @@ package com.marketdataclient.kdbfeedhandler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.marketdataclient.kdbfeedhandler.TickDataQueue;
+
+import com.marketdataclient.icici.ICICIWorkerManager;
 
 public class KdbTickPublisher implements Runnable
 {
@@ -33,17 +34,17 @@ public class KdbTickPublisher implements Runnable
 		{
 			try
 			{
-				String csvTickItem = null;
+				ICICITickEvent iciciTickItem = null;
 				try
 				{
-					if (!TickDataQueue.getTickDataQueue().isEmpty())
+					if (!ICICIWorkerManager.getTickDataQueue().getTickDataQueue().isEmpty())
 					{
-						csvTickItem = TickDataQueue.getTickDataQueue().take();
-						boolean publishStatus = feedHandler.publish(csvTickItem);
+						ICICITickEvent tickEvent = ICICIWorkerManager.getTickDataQueue().getTickDataQueue().take();
+						boolean publishStatus = feedHandler.publish(tickEvent);
 						if (!publishStatus)
 						{
 							logger.warn("Failed to publish the below tick to the database. Please verify the content of the same. Below is its dump");
-							logger.warn(csvTickItem);
+							logger.warn(iciciTickItem);
 						}
 					}
 

@@ -65,4 +65,13 @@ public class ICICITickEvent
 		this.date = date;
 		this.lastTradedTime = lastTradedTime;
 	}
+
+	public String toCsvFormart()
+	{
+		return (tickSequence + "," + exchangeName + "," + sym + "," + highPrice + "," + lifeTimeHighPrice + "," + lifeTimeLowPrice + "," + dayHighPrice + "," + lastTradedPrice
+				+ "," + week52HighPrice + "," + week52LowPrice + "," + bestBidPrice + "," + bestAskPrice + "," + dayOpenPrice + "," + dayClosePrice + "," + prevDayClosePrice + ","
+				+ dayLowPrice + "," + highPriceRange + "," + lowPriceRange + "," + absolutePriceChange + "," + percentPriceChange + "," + bestBidQuantity + "," + bestAskQuantity
+				+ "," + dayVolume + "," + date + "," + lastTradedTime);
+	}
+
 }

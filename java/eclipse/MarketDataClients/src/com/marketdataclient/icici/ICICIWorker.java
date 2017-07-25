@@ -9,6 +9,8 @@ import com.marketdataclient.icici.ICICIResultParser.exchangeInfo;
 
 public class ICICIWorker implements Runnable
 {
+	final static Logger logger = LogManager.getLogger(ICICIWorker.class);
+	
 	private String stockName;
 	static AtomicInteger atomicInteger = new AtomicInteger(0);
 	static boolean printTickResults = true;
@@ -52,8 +54,6 @@ public class ICICIWorker implements Runnable
 	{
 		ICICIWorker.tickSequenceLimit = tickSequenceLimit;
 	}
-
-	final static Logger logger = LogManager.getLogger(ICICIWorker.class);
 
 	public static boolean isBSE()
 	{

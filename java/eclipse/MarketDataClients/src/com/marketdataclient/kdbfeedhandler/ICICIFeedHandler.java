@@ -17,7 +17,7 @@ import kx.c.KException;
  * Implements {@link FeedListener} so can listen to feeds which it will then
  * parse to a K object and forward to a KDB server.
  */
-public class ICICIFeedHandler implements ICICIFeedListener
+public class ICICIFeedHandler implements FeedListener<ICICITickEvent>
 {
 
 	final static Logger logger = LogManager.getLogger(ICICIFeedHandler.class);
@@ -38,6 +38,13 @@ public class ICICIFeedHandler implements ICICIFeedListener
 		List<ICICITickEvent> tickEvents = convertToTickEvent(csvTickString);
 		return (pumpTickEventToKDB(tickEvents));
 
+	}
+
+	public boolean publish(ICICITickEvent tickEvent)
+	{
+		List<ICICITickEvent> tickEvents = new ArrayList<ICICITickEvent>();
+		tickEvents.add(tickEvent);
+		return (pumpTickEventToKDB(tickEvents));
 	}
 
 	private List<ICICITickEvent> convertToTickEvent(String csvFormatRow)

@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 
 import com.marketdataclient.icici.ICICIWorker.tickDestination;
-import com.marketdataclient.kdbfeedhandler.TickDataQueue;
+import com.marketdataclient.kdbfeedhandler.ICICITickEvent;
 
 public class ICICIHelperUtils
 {
@@ -28,7 +28,7 @@ public class ICICIHelperUtils
 	public static void csvFormatResultPrinter(ICICIResultParser resultParser, String stockName, long counter)
 	{
 
-		String csvResult = null;
+		ICICITickEvent tickEvent = null;
 		boolean overAllParseStatus = false;
 
 		try
@@ -77,11 +77,12 @@ public class ICICIHelperUtils
 				lastTradedTime = Time.valueOf(result);
 			}
 
-			// The resulting CSV string is built below.
-			csvResult = counter + "," + exchangeName + "," + stockName + "," + highPrice + "," + lifeTimeHighPrice + "," + lifeTimeLowPrice + "," + dayHighPrice + ","
-					+ lastTradedPrice + "," + week52HighPrice + "," + week52LowPrice + "," + bestBidPrice + "," + bestAskPrice + "," + dayOpenPrice + "," + dayClosePrice + ","
-					+ prevDayClosePrice + "," + +dayLowPrice + "," + highPriceRange + "," + lowPriceRange + "," + absolutePriceChange + "," + percentPriceChange + ","
-					+ bestBidQuantity + "," + bestAskQuantity + "," + dayVolume + "," + valueDate + "," + lastTradedTime;
+			// Instead of writing a csv tick to the blocking queue write the
+			// ICICITickEvent which can be read and parsed directly by the kdb
+			// publisher.
+			tickEvent = new ICICITickEvent((int)counter, exchangeName, stockName, highPrice, lifeTimeHighPrice, lifeTimeLowPrice, dayHighPrice, lastTradedPrice,
+					week52HighPrice, week52LowPrice, bestBidPrice, bestAskPrice, dayOpenPrice, dayClosePrice, prevDayClosePrice, dayLowPrice, highPriceRange, lowPriceRange,
+					absolutePriceChange, percentPriceChange, bestBidQuantity, bestAskQuantity, dayVolume, valueDate, lastTradedTime);
 
 			overAllParseStatus = true;
 
@@ -98,7 +99,7 @@ public class ICICIHelperUtils
 
 			if (ICICIWorker.getDestination() == tickDestination.STDOUT)
 			{
-				System.out.println(csvResult);
+				System.out.println(tickEvent.toCsvFormart());
 				logger.info("Successfully parsed and printed to stdout the data for symbol = " + stockName + ", The tick sequence was at " + counter + ".");
 			}
 
@@ -107,13 +108,13 @@ public class ICICIHelperUtils
 
 				try
 				{
-					TickDataQueue.getTickDataQueue().add(csvResult);
+					ICICIWorkerManager.getTickDataQueue().getTickDataQueue().add(tickEvent);
 					logger.info("Successfully parsed and published the data for symbol = " + stockName + ", The tick sequence was at " + counter + ".");
 				} catch (Exception e)
 				{
 					logger.warn("Please verify that TickDataQueue status. It seems pushing data to this queue produced an exception. The current of the queue = "
-							+ TickDataQueue.getTickDataQueue().size());
-					logger.warn("The capacity of the TickDataQueue is =" + TickDataQueue.getTickDataQueue().remainingCapacity());
+							+ ICICIWorkerManager.getTickDataQueue().getTickDataQueueSize());
+					logger.warn("The capacity of the TickDataQueue is =" + ICICIWorkerManager.getTickDataQueue().getTickDataQueue().remainingCapacity());
 				}
 			}
 		}
@@ -121,8 +122,8 @@ public class ICICIHelperUtils
 
 	public static void printCsvHeader()
 	{
-		// System.out.println(
-		// "tickSequence,exchangeName,stockName,highPrice,lifeTimeHighPrice,lifeTimeLowPrice,dayHighPrice,lastTradedPrice,week52HighPrice,week52LowPrice,bestBidPrice,bestAskPrice,dayOpenPrice,dayClosePrice,prevDayClosePrice,dayLowPrice,highPriceRange,lowPriceRange,absolutePriceChange,percentPriceChange,bestBidQuantity,bestAskQuantity,dayVolume,date,lastTradedTime");
+
+		logger.info("csv header is");
 		logger.info(
 				"tickSequence,exchangeName,stockName,highPrice,lifeTimeHighPrice,lifeTimeLowPrice,dayHighPrice,lastTradedPrice,week52HighPrice,week52LowPrice,bestBidPrice,bestAskPrice,dayOpenPrice,dayClosePrice,prevDayClosePrice,dayLowPrice,highPriceRange,lowPriceRange,absolutePriceChange,percentPriceChange,bestBidQuantity,bestAskQuantity,dayVolume,date,lastTradedTime");
 	}

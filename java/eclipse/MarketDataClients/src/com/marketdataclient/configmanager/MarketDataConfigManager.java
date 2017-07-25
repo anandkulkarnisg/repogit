@@ -55,14 +55,14 @@ public class MarketDataConfigManager
 	public MarketDataConfigManager(String configType)
 	{
 
-		configPrefix = configType;
+		configPrefix = configType.toLowerCase();
 		try
 		{
 			String filePath = "";
 			if (!configType.isEmpty())
 			{
 				String patternFrom = "marketDataClientConfig.xml";
-				String patternTo = configType + "." + patternFrom;
+				String patternTo = configPrefix + "." + patternFrom;
 				filePath = defaultConfigPath.replaceAll(patternFrom, patternTo);
 			} else
 				filePath = defaultConfigPath;

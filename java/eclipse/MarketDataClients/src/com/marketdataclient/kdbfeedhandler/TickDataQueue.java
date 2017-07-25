@@ -2,18 +2,8 @@ package com.marketdataclient.kdbfeedhandler;
 
 import java.util.concurrent.BlockingQueue;
 
-public class TickDataQueue
+public interface TickDataQueue<T>
 {
-	private static BlockingQueue<String> tickDataQueue;
-
-	public static BlockingQueue<String> getTickDataQueue()
-	{
-		return tickDataQueue;
-	}
-
-	public static void setTickDataQueue(BlockingQueue<String> dataQueue)
-	{
-		tickDataQueue = dataQueue;
-	}
-
+	public BlockingQueue<T> getTickDataQueue();
+	public void setTickDataQueue(BlockingQueue<T> dataQueue);
 }
