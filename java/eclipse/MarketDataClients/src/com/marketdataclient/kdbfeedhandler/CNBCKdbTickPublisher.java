@@ -6,10 +6,10 @@ import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ICICIKdbTickPublisher
+public class CNBCKdbTickPublisher
 {
 
-	final static Logger logger = LogManager.getLogger(ICICIKdbTickPublisher.class);
+	final static Logger logger = LogManager.getLogger(CNBCKdbTickPublisher.class);
 	private int numPublisherThreads;
 	private String kdbServer;
 	private int kdbPort;
@@ -30,10 +30,10 @@ public class ICICIKdbTickPublisher
 
 	public static void setKeepPublishing(boolean keepPublishing)
 	{
-		ICICIKdbTickPublisher.keepPublishing = keepPublishing;
+		CNBCKdbTickPublisher.keepPublishing = keepPublishing;
 	}
 
-	public ICICIKdbTickPublisher(int numWorkers, String server, int port)
+	public CNBCKdbTickPublisher(int numWorkers, String server, int port)
 	{
 		numPublisherThreads = numWorkers;
 		if (executor == null)
@@ -47,7 +47,7 @@ public class ICICIKdbTickPublisher
 	{
 		for (int i = 0; i < numPublisherThreads; ++i)
 		{
-			Runnable publisher = new ICICITickPublisher(kdbServer, kdbPort);
+			Runnable publisher = new CNBCTickPublisher(kdbServer, kdbPort);
 			executor.execute(publisher);
 		}
 	}

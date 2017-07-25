@@ -5,44 +5,53 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import java.net.HttpURLConnection;
-
-// Useful Tips : Gold seems to have 18 contract prices with up front Gold future trading at @GC.1 all the way till @GC.18
-// Connection reuse in http post via HttpUrlConnection : read these articles on stack overflow.
-// https://stackoverflow.com/questions/16256681/how-to-reuse-httpurlconnection
-// https://stackoverflow.com/questions/3304006/persistent-httpurlconnection-in-java?noredirect=1&lq=1
-
-// Testing some CNBC HTTP post method for the cnbc real time quote
-// website.
-// CNBCHttpPostExample httpExample = new CNBCHttpPostExample();
-// httpExample.httpPost("INR=");
-// System.exit(1);
-
-public class CNBCHttpPostExample
+public class CNBCPrices
 {
+	final static Logger logger = LogManager.getLogger(CNBCPrices.class);
+	private static final String CNBC_QUOTEBASE_URL = "http://quote.cnbc.com/quote-html-webservice/quote.htm";
+	private String symbol;
 
-	public void httpPost(String cnbcSymbol)
+	public CNBCPrices()
 	{
-		String url = "http://quote.cnbc.com/quote-html-webservice/quote.htm";
+		symbol = "@SI.1";
+	}
+
+	public CNBCPrices(String sym)
+	{
+		symbol = sym;
+	}
+
+	public String getSymbol()
+	{
+		return symbol;
+	}
+
+	public Map<String, Object> streamPrices()
+	{
+		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
 		URL obj = null;
 		try
 		{
-			obj = new URL(url);
+			obj = new URL(CNBC_QUOTEBASE_URL);
 
 		} catch (MalformedURLException e)
 		{
@@ -90,7 +99,7 @@ public class CNBCHttpPostExample
 		String urlParameters = "";
 
 		Map<String, String> postParametersMap = new HashMap<String, String>();
-		postParametersMap.put("symbols", cnbcSymbol);
+		postParametersMap.put("symbols", symbol);
 		postParametersMap.put("symbolType", "symbol");
 		postParametersMap.put("requestMethod", "fast");
 		postParametersMap.put("exthrs", "1");
@@ -150,6 +159,9 @@ public class CNBCHttpPostExample
 		try
 		{
 			responseCode = con.getResponseCode();
+			if (responseCode != 200)
+				logger.warn("Got a bad response code " + responseCode);
+
 			// System.out.println("Response Content : " +
 			// con.getResponseMessage());
 		} catch (IOException e)
@@ -204,34 +216,40 @@ public class CNBCHttpPostExample
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			InputSource is = new InputSource(new StringReader(response.toString()));
 			// Document doc = dBuilder.parse(fXmlFile);
-			Document doc = dBuilder.parse(is);
+			Document doc = null;
+			try
+			{
+				doc = dBuilder.parse(is);
+			} catch (Exception e)
+			{
+				System.out.println("The stock symbol is :" + getSymbol());
+				System.out.println("The bad html is :" + response.toString());
+			}
 
 			// optional, but recommended
 			// read this -
 			// http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-			doc.getDocumentElement().normalize();
-
-			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-			NodeList nList = doc.getElementsByTagName("FastQuote");
-			for (int temp = 0; temp < nList.getLength(); temp++)
+			if (doc != null)
 			{
-
-				Node nNode = nList.item(temp);
-
-				System.out.println("\nCurrent Element :" + nNode.getNodeName());
-
-				if (nNode.getNodeType() == Node.ELEMENT_NODE)
+				doc.getDocumentElement().normalize();
+				NodeList nList = doc.getElementsByTagName("FastQuote");
+				for (int temp = 0; temp < nList.getLength(); temp++)
 				{
-
-					Element eElement = (Element) nNode;
-
-					System.out.println("symbol : " + eElement.getElementsByTagName("symbol").item(0).getTextContent());
-					System.out.println("shortName : " + eElement.getElementsByTagName("shortName").item(0).getTextContent());
-					System.out.println("last : " + eElement.getElementsByTagName("last").item(0).getTextContent());
-					System.out.println("change : " + eElement.getElementsByTagName("change").item(0).getTextContent());
-					System.out.println("cacheServed : " + eElement.getElementsByTagName("cacheServed").item(0).getTextContent());
-					System.out.println("cacheTime : " + eElement.getElementsByTagName("cachedTime").item(0).getTextContent());
-
+					Node nNode = nList.item(temp);
+					if (nNode.getNodeType() == Node.ELEMENT_NODE)
+					{
+						Element eElement = (Element) nNode;
+						result.put("symbol", eElement.getElementsByTagName("symbol").item(0).getTextContent());
+						result.put("shortName", eElement.getElementsByTagName("shortName").item(0).getTextContent());
+						result.put("lastPrice", eElement.getElementsByTagName("last").item(0).getTextContent());
+						result.put("change", eElement.getElementsByTagName("change").item(0).getTextContent());
+						result.put("provider", eElement.getElementsByTagName("provider").item(0).getTextContent());
+						result.put("changePercent", eElement.getElementsByTagName("change_pct").item(0).getTextContent());
+						result.put("cacheServed", eElement.getElementsByTagName("cacheServed").item(0).getTextContent());
+						result.put("cacheTime", eElement.getElementsByTagName("cachedTime").item(0).getTextContent());
+						result.put("responseTime", eElement.getElementsByTagName("responseTime").item(0).getTextContent());
+						result.put("realTimeStatus", eElement.getElementsByTagName("realTime").item(0).getTextContent());
+					}
 				}
 			}
 		} catch (Exception e)
@@ -239,6 +257,7 @@ public class CNBCHttpPostExample
 			e.printStackTrace();
 		}
 
+		return (result);
 	}
 
 }

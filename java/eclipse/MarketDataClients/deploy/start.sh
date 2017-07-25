@@ -7,6 +7,6 @@ if [ $cwd != "/home/anand/repogit/java/eclipse/MarketDataClients/deploy" ]; then
 	cwd=$PWD
 fi
 
-nohup ~/runq5000 $cwd/kdb/icici-init.q &
+nohup ~/runq5000 $cwd/kdb/start.q &
 nohup java -jar $cwd/MarketDataClient.jar &
 cd $backupcwd
