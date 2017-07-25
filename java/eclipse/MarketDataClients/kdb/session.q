@@ -34,3 +34,13 @@ select from trade where sym=`DLFLIM
 
 select sym, cnt , total:sum cnt from (select cnt:count i by sym from trade)
 select from trade where shortName=`GOLD
+
+
+
+
+meta trade
+
+`shortName xasc select distinct shortName, lastPrice from trade
+
+
+
