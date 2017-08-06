@@ -1,6 +1,5 @@
 / trace external (.z.p*) usage of a kdb+ session to console
 \l dotz.q
-\l roundrobin.q
 
 \d .usage
 trace:{[zcmd;endp;result;arg;startp] / record

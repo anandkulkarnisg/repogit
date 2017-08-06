@@ -74,15 +74,24 @@ public class ICICIHelperUtils
 			{
 				String result = resultParser.getLastTradedTime();
 				result = result.substring(0, result.length() - 4);
-				lastTradedTime = Time.valueOf(result);
+				if (!result.equalsIgnoreCase("&n"))
+				{
+
+					lastTradedTime = Time.valueOf(result);
+				} else
+				{
+					lastTradedTime = Time.valueOf("16:00:00"); // defaulting the
+																// BSE NA to
+																// close time.
+				}
 			}
 
 			// Instead of writing a csv tick to the blocking queue write the
 			// ICICITickEvent which can be read and parsed directly by the kdb
 			// publisher.
-			tickEvent = new ICICITickEvent((int)counter, exchangeName, stockName, highPrice, lifeTimeHighPrice, lifeTimeLowPrice, dayHighPrice, lastTradedPrice,
-					week52HighPrice, week52LowPrice, bestBidPrice, bestAskPrice, dayOpenPrice, dayClosePrice, prevDayClosePrice, dayLowPrice, highPriceRange, lowPriceRange,
-					absolutePriceChange, percentPriceChange, bestBidQuantity, bestAskQuantity, dayVolume, valueDate, lastTradedTime);
+			tickEvent = new ICICITickEvent((int) counter, exchangeName, stockName, highPrice, lifeTimeHighPrice, lifeTimeLowPrice, dayHighPrice, lastTradedPrice, week52HighPrice,
+					week52LowPrice, bestBidPrice, bestAskPrice, dayOpenPrice, dayClosePrice, prevDayClosePrice, dayLowPrice, highPriceRange, lowPriceRange, absolutePriceChange,
+					percentPriceChange, bestBidQuantity, bestAskQuantity, dayVolume, valueDate, lastTradedTime);
 
 			overAllParseStatus = true;
 
