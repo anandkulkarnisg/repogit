@@ -43,36 +43,30 @@
                         (`noCycle; "")
                     }
 
+
+.graph.moveFromWhiteSetToGraySet:{[itemToBeMoved]
+                                    .global.graySet:.global.graySet,itemToBeMoved;
+                                    .global.whiteSet:.global.whiteSet except itemToBeMoved;
+                                 }
+
+.graph.moveFromGraySetToBlackSet:{[itemToBeMoved]
+                                    .global.blackSet:.global.blackSet,itemToBeMoved;
+                                    .global.graySet:.global.graySet except itemToBeMoved;  
+                                 }   
+
 / The DFS search algorithm.
     .graph.dfs:{[currentItem;inputDict]
                             
                         $[currentItem=`;:0b;::];
-                        0N!raze raze( "Exploring the item = "; string currentItem);
-                        0N!raze raze( "White Set is = "; string .global.whiteSet);
-                        0N!raze raze( "Gray Set is = "; string .global.graySet);
-                        0N!raze raze( "Black Set is = "; string .global.blackSet);
 
                         // First move the item to gray set from white set. Since recursion uses global variables this check is needed.
-                        $[(not currentItem in .global.graySet); [       .global.graySet:.global.graySet,currentItem;
-                                                                        .global.whiteSet:.global.whiteSet except currentItem;
-                                                                ];
-                                                                ::
-                         ];      
+                        $[(not currentItem in .global.graySet); [.graph.moveFromWhiteSetToGraySet[currentItem];];::];      
 
-                        0N!raze raze( "After the move of item = "; string currentItem);
-                        0N!raze raze( "White Set is = "; string .global.whiteSet);
-                        0N!raze raze( "Gray Set is = "; string .global.graySet);
-                        0N!raze raze( "Black Set is = "; string .global.blackSet);
-                                 
-                                               
                         // Now loop across all the connected neighbours of currentItem.
                         neighbours:inputDict[currentItem];
                         size:count neighbours;
                         $[size=1;neighbours:enlist neighbours;::];
                         iter:0;                    
-
-                        0N!raze raze( "The total size of dependents on = "; string currentItem; " is = "; string size);    
-                        0N!raze raze( "The type of list is = "; string (type neighbours); "h");    
 
                         // No more neighbours left this breaks the cycle.
                          $[((size=1) and (type neighbours)=0h);iter:size;::];
@@ -94,13 +88,10 @@
                                     iter:iter+1;                                  
                              ];
 
-                                0N!raze raze( "moving item from gray to black set = "; string currentItem);
-                                 // Move the current item to blackSet from graySet.
-                                .global.blackSet:.global.blackSet,currentItem;
-                                .global.graySet:.global.graySet except currentItem;
-                                0N!raze raze( "White Set is = "; string .global.whiteSet);
-                                0N!raze raze( "Gray Set is = "; string .global.graySet);
-                                0N!raze raze( "Black Set is = "; string .global.blackSet);
+                       // Move the current item to blackSet from graySet.
+                       .graph.moveFromGraySetToBlackSet[currentItem];
+
+                       // Return all good.
                        0b           
                    }
 
@@ -120,7 +111,6 @@
                                                                                                     [tracerList:.graph.getsubCycle[tracerList;introducerItem];introducerItem:nodeItem;]]
                                                                                     ];
                                                                                     [tracerList:tracerList,nodeItem; introducerItem:nodeItem;]];
-                                                             0N!tracerList
                              ];
 
                         tracerList:reverse tracerList;        
@@ -253,9 +243,67 @@
   d.g:`h;
   d.h:`g`e
   
-  / cycle in cycle [ sub cycle ]
-  / .graph.hasCycle[d]
+/ cycle in cycle [ sub cycle ]
+/ .graph.hasCycle[d]
  
+
+/ A case with three cycles.
+
+/ delete d from `.
+
+    d.a:`b;
+    d.b:`c;
+    d.c:`d`e`f;
+    d.d:0#`;
+    d.e:`g;
+    d.f:0#`;
+    d.g:`i`h;
+    d.h:`j;
+    d.i:`e`c;
+    d.j:`g;
+
+.graph.hasCycle[d] // Test cases pass.
+/ First case detects : (`cycleError;"e-->g-->i-->e")
+/ Remove i to e connection.
+   d.i:`c;  
+/ Now detects the other cycle : (`cycleError;"c-->e-->g-->i-->c")
+/ Now remove the i to c connection.
+   d.i:0#`;
+
+/ Now exposes the final cycle : (`cycleError;"g-->h-->j-->g")
+/ Remove the connection j to g.
+  d.j:0#`;  
+/ Finally no cylces present! (`noCycle;"")
+/ All test cases passed.
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
