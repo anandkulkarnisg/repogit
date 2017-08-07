@@ -26,6 +26,17 @@
                                  }
 
 
+.graph.moveFromWhiteSetToGraySet:{[itemToBeMoved]
+                                    .global.graySet:.global.graySet,itemToBeMoved;
+                                    .global.whiteSet:.global.whiteSet except itemToBeMoved;
+                                 }
+
+.graph.moveFromGraySetToBlackSet:{[itemToBeMoved]
+                                    .global.blackSet:.global.blackSet,itemToBeMoved;
+                                    .global.graySet:.global.graySet except itemToBeMoved;  
+                                 } 
+
+
 .graph.DAGCycleCheck:{[inputDict;inputDebugMode]                        
                         
                         $[((type inputDebugMode)<>-11h) or (not (lower inputDebugMode) in `y`n);:`$"badDebugMode-use either `y`n";::];    
@@ -56,17 +67,6 @@
                              ];               
                         (`noCycle; "")
                  }
-
-
-.graph.moveFromWhiteSetToGraySet:{[itemToBeMoved]
-                                    .global.graySet:.global.graySet,itemToBeMoved;
-                                    .global.whiteSet:.global.whiteSet except itemToBeMoved;
-                                 }
-
-.graph.moveFromGraySetToBlackSet:{[itemToBeMoved]
-                                    .global.blackSet:.global.blackSet,itemToBeMoved;
-                                    .global.graySet:.global.graySet except itemToBeMoved;  
-                                 }   
 
 / The DFS search algorithm.
 .graph.dfs:{[currentItem;inputDict]
@@ -141,155 +141,48 @@
                         tracerList:tracerList,introducerItem                        
                    }
 
-.graph.hasCycle[d]
-                       
-/ Input is a dictionary of a DAG where each edge each key represents the vertex and values represent the direction to which edges flow from this vertex.
 
-    d.1:`2`3;
-    d.2:`3;
-    d.3:0#`;
-    d.4:`5;
-    d.5:`6;
-    d.6:`4;
+.graph.getCleanGraph:{[inputDict]
 
-    / delete d from `.
+                        // inputDict:d;
+                        // This function takes a DAG graph with multiple cycles and elimitaes the cycle edges and outputs a clean graph if possible.
+                        resultPair:.graph.DAGCycleCheck[inputDict;`n];    
 
-    d.1:`2;
-    d.2:`3;    
-    d.3:0#`;
+                        // If no cycle found just return the dictionary as it is.
+                        $[resultPair[0]=0b;:inputDict;::];
 
-   / delete d from `.
+                        // If a cycle is found attempt a removal unless graph is clean.
+                        logtbl:([cycle:`symbol$()]; actionmessage:`symbol$());
 
-   d.1:`2;
-   d.2:`3;
-   d.3:`1;
+                        // Loop until we find and repair all vertices causing the cycles in the Graph.
+                        while[(resultPair[0]<>0b);      
+                                                        / Extract the cycle information.
+                                                        cycleInfo:resultPair[1];                                                        
+                                                        cycleEdges:-2#(raze (`$ ("-->" vs (string cycleInfo))));
+                                                        
+                                                        / Identify the source and targetVertex which are causing loop.
+                                                        srcVertex:cycleEdges[0];
+                                                        targetVertex:cycleEdges[1];
 
-/ .graph.hasCycle[d]
+                                                        / Now strip the targetVertex from the sourceVertex in the dictionary.
+                                                        valItems:inputDict[srcVertex];
+                                                        $[(count valItems)=1;valItems:enlist valItems;::];
+                                                        valItems:valItems except targetVertex;
+                                                        $[(count valItems)=1;valItems:valItems[0];::];
 
-   d.1:`2;
-   d.2:`11;
+                                                        / Update the dictionary here.
+                                                        inputDict[srcVertex]:valItems;                                                        
 
-/ .graph.hasCycle[d]
+                                                        / Log the action into a table returned later to the caller. so he knows what action has been taken.
+                                                        actionMessage:`$ raze ("removed the edge from vertex = "; string srcVertex; " to vertex = "; string targetVertex); 
+                                                        logtbl:logtbl upsert ([cycle:enlist cycleInfo]; actionmessage:enlist actionMessage);
 
-    d.1:`2;
-    d.2:`1;
+                                                        / Rerun the cycle check again after the repair. It will break when no cycles are found anymore.
+                                                        resultPair:.graph.DAGCycleCheck[inputDict;`n];
+                            ];
 
-/ .graph.hasCycle[d]
-/ The above is a inputDict for the DFS search of a cycle in the DFS.
-
-    d.a:`b;
-    d.b:`c;
-    d.c:`d`e`f;
-    d.d:0#`;
-    d.e:0#`;
-    d.f:`g`h;
-    d.g:0#`;
-    d.h:`a;
-
-    / delete d from `.
-    d.a:`b;
-    d.b:`c;
-    d.c:`d;
-    d.d:`e;
-    d.e:`f`g;   
-    d.f:`a;
-    d.g:0#`;
-/ .graph.hasCycle[d]
-
-/ Another test sample.
-
-    d.a:`b;
-    d.b:`c;
-    d.c:`d`e`f;
-    d.d:0#`;
-    d.e:0#`;
-    d.f:`g`h;
-    d.g:0#`;
-    d.h:`a;
-    / delete d from `.
-    / .graph.hasCycle[d]
+                        (inputDict;logtbl)
+                       }
 
 
-/ delete d from `.
-
-    d.a:`b;
-    d.b:`c;
-    d.c:`d`e;
-    d.d:`f`g`h;
-    d.e:0#`;
-    d.f:0#`;
-    d.g:`h;
-    d.h:`i;
-    d.i:0#`;    
-    .graph.hasCycle[d]
-  
-/  delete d from `.
-
-    d.a:`b;
-    d.b:`c;
-    d.c:`d`e`f;
-    d.d:0#`;
-    d.e:0#`;
-    d.f:`g;
-    d.g:`h;
-    d.h:`i;
-    d.i:`e;
-    /.graph.hasCycle[d]
-
-/ delete d from `.
-
-    d.a:`b;
-    d.b:`c;
-    d.c:`d;
-    d.d:`e;
-    d.e:`b;
-    .graph.hasCycle[d]
-    
-
-/ delete d from `.
-    
-  d.a:`b;
-  d.b:`c;
-  d.c:`d`e`f;
-  d.d:0#`;
-  d.e:`g;
-  d.f:0#`;
-  d.g:`h;
-  d.h:`g`e
-  
-/ cycle in cycle [ sub cycle ]
-/ .graph.hasCycle[d]
- 
-
-/ A case with three cycles.
-
-/ delete d from `.
-
-    d.a:`b;
-    d.b:`c;
-    d.c:`d`e`f;
-    d.d:0#`;
-    d.e:`g;
-    d.f:0#`;
-    d.g:`i`h;
-    d.h:`j;
-    d.i:`e`c;
-    d.j:`g;
-
-.graph.hasCycle[d] // Test cases pass.
-/ First case detects : (`cycleError;"e-->g-->i-->e")
-/ Remove i to e connection.
-   d.i:`c;  
-/ Now detects the other cycle : (`cycleError;"c-->e-->g-->i-->c")
-/ Now remove the i to c connection.
-   d.i:0#`;
-
-/ Now exposes the final cycle : (`cycleError;"g-->h-->j-->g")
-/ Remove the connection j to g.
-  d.j:0#`;  
-/ Finally no cylces present! (`noCycle;"")
-/ All test cases passed.
-  
-
-.graph.DAGCycleCheck[d;`n]
 
