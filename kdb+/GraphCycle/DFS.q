@@ -1,5 +1,3 @@
-
-
 / Core graph library implementation.
 
 .graph.initStructures:{[]
@@ -10,6 +8,12 @@
             .global.dfsMap:([] introducer:`symbol$(); node:`symbol$());
     }
 
+
+.graph.cleanupStructures:{[]
+                           delete whiteSet, graySet, blackSet, dfsMap from `.global;
+                         }
+
+
 .graph.updateDfsMap:{[introducerItem;nodeItem]
                             .global.dfsMap:.global.dfsMap upsert ([] introducer:enlist introducerItem; node:enlist nodeItem);
                     } 
@@ -19,10 +23,20 @@
                                             L1:(key inputDict) except `;
                                             L2:(value inputDict);L2:L2 except L2[0];
                                             { val:y[x]; { .graph.updateDfsMap[y;x] }[;x] each val; }[;inputDict] each L1;
-                                 }               
+                                 }
+
+
+.graph.DAGCycleCheck:{[inputDict;inputDebugMode]                        
+                        
+                        $[((type inputDebugMode)<>-11h) or (not (lower inputDebugMode) in `y`n);:`badinput;::];    
+                        resultPair:.graph.hasCycle[inputDict];
+                        $[inputDebugMode=`n;.graph.cleanupStructures[];::];
+                        $[resultPair[0]=`cycleError;:(1b;`$resultPair[1]);:(0b;`$resultPair[1])];
+                     }
+
 
 / The main driver function that checks for the cycle.
-    .graph.hasCycle:{[inputDict]                
+.graph.hasCycle:{[inputDict]                
 
                         // Initialize the tracking structures.
                         .graph.initStructures[];
@@ -41,7 +55,7 @@
                                           ];  
                              ];               
                         (`noCycle; "")
-                    }
+                 }
 
 
 .graph.moveFromWhiteSetToGraySet:{[itemToBeMoved]
@@ -55,7 +69,7 @@
                                  }   
 
 / The DFS search algorithm.
-    .graph.dfs:{[currentItem;inputDict]
+.graph.dfs:{[currentItem;inputDict]
                             
                         $[currentItem=`;:0b;::];
 
@@ -93,7 +107,7 @@
 
                        // Return all good.
                        0b           
-                   }
+               }
 
 .graph.traceCycle:{[]
                         tracerList:`symbol$();
@@ -277,10 +291,7 @@
 / All test cases passed.
   
 
-
-
-
-
+.graph.DAGCycleCheck[d;`n]
 
 
 
