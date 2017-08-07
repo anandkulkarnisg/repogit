@@ -28,7 +28,7 @@
 
 .graph.DAGCycleCheck:{[inputDict;inputDebugMode]                        
                         
-                        $[((type inputDebugMode)<>-11h) or (not (lower inputDebugMode) in `y`n);:`badinput;::];    
+                        $[((type inputDebugMode)<>-11h) or (not (lower inputDebugMode) in `y`n);:`$"badDebugMode-use either `y`n";::];    
                         resultPair:.graph.hasCycle[inputDict];
                         $[inputDebugMode=`n;.graph.cleanupStructures[];::];
                         $[resultPair[0]=`cycleError;:(1b;`$resultPair[1]);:(0b;`$resultPair[1])];
@@ -292,32 +292,4 @@
   
 
 .graph.DAGCycleCheck[d;`n]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
