@@ -144,8 +144,7 @@
 
 .graph.getCleanGraph:{[inputDict]
 
-                        // inputDict:d;
-                        // This function takes a DAG graph with multiple cycles and elimitaes the cycle edges and outputs a clean graph if possible.
+                        // This function takes a DAG graph with multiple cycles and eliminates the cycle edges and outputs a clean graph if possible.
                         resultPair:.graph.DAGCycleCheck[inputDict;`n];    
 
                         // If no cycle found just return the dictionary as it is.
@@ -161,6 +160,9 @@
                                                         cycleEdges:-2#(raze (`$ ("-->" vs (string cycleInfo))));
                                                         
                                                         / Identify the source and targetVertex which are causing loop.
+                                                        / srcVertex is the source vertex from where back edge starts.
+                                                        / targetVertex is the place where the back edge ends and creates a cycle.
+
                                                         srcVertex:cycleEdges[0];
                                                         targetVertex:cycleEdges[1];
 

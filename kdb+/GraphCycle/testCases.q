@@ -169,7 +169,19 @@ p[0]
 p[1]
 
 
+/ Hyptothentical example below.
+/ delete d from `.
 
+  d.a:`b;
+  d.b:`c;
+  d.c:`d`g;
+  d.d:`e;
+  d.e:`f`c;
+  d.f:`g`b;
+  d.g:`a`c;
+
+p:.graph.getCleanGraph[d]
+p[1]
 
 
 
