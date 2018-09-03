@@ -102,7 +102,7 @@ public class LocatorService
 		String ipAddress = results[5].substring(86, 99);
 		URLStreamer ipInforStreamer = new URLStreamer("https://ipaddress.ip-adress.com/" + ipAddress);
 		String[] ipInfoStreamerResults = ipInforStreamer.getRawTextStream();
-		
+		ipInforStreamer.printRawLiveStream();		
 		
 //		309 --> <tr><th>IP Address</th><td>58.182.109.60</td></tr>
 //		310 --> <tr><th>Decimal Representation</th><td>985034044</td></tr>
