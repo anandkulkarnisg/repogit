@@ -7,15 +7,16 @@
 using namespace std;
 
 enum class SortOrder { asc, desc };
+enum class WinsorStyle { strict, relaxed };
 
 void printArrayToConsole(const char* phase, const vector<int> arr)
 {
-  cout << phase << endl;
+  cout << phase;
   size_t size = arr.size();
   if(size)
   {
     for(unsigned int i=0; i<size-1; ++i)
-      cout << arr[i] << ", ";
+      cout << arr[i] << ",";
     cout << arr[size-1] << '\n';
   }
 }
@@ -35,7 +36,7 @@ bool doCompare(const int& item1, const int& item2, const SortOrder& sortOrder)
     return(item1>item2);
 }
 
-pair<int, int> doPartialSelectionSort(const vector<int>& orig, const float& winsorSize)
+pair<int, int> doPartialSelectionSort(const vector<int>& orig, const float& winsorSize, const WinsorStyle& winsorStyle=WinsorStyle::strict)
 {
   vector<int> arr(orig);
   size_t size=arr.size();
@@ -57,8 +58,38 @@ pair<int, int> doPartialSelectionSort(const vector<int>& orig, const float& wins
       }
       if(minIdx!=i)
         doSwapItems(&arr[i], &arr[minIdx]);
+    }    
+    size_t resultIdx;    
+    float percentileVal;
+    resultIdx=iterations-1;
+    if(sortOrder == SortOrder::asc)
+    {
+      //cout << "The index = " << iterations-1 << endl;          
+      //cout << "The percentile is = " << static_cast<float>(resultIdx)/static_cast<float>(size-1) << endl;
+      percentileVal=static_cast<float>(iterations-1)/static_cast<float>(size-1);
     }
-    results.emplace_back(arr[iterations-1]);
+    else
+    {
+      //cout << "The index = " << (size-1)-(iterations-1) << endl;
+      //cout << "The percentile is = " << static_cast<float>(resultIdx)/static_cast<float>(size-1) << endl;
+      percentileVal=static_cast<float>((size-1)-(iterations-1))/static_cast<float>(size-1);
+    }
+    
+    if(winsorStyle==WinsorStyle::relaxed)
+    {
+      if(sortOrder == SortOrder::asc)
+      {
+        if(percentileVal>winsorSize)
+          resultIdx-=1;
+      }
+      else
+      {
+        if(percentileVal<(100-winsorSize*100))
+          resultIdx-=1;
+      }        
+    }
+    
+    results.emplace_back(arr[resultIdx]);
   }
   return(make_pair(results[0], results[1]));
 }
@@ -86,8 +117,8 @@ int main(int argc, char* argv[])
 {
   vector<int> arr= { 92, 19, 101, 58, 1053, 91, 26, 78, 10, 13, -40, 101, 86, 85, 15, 89, 89, 28, -5, 41};
   printArrayToConsole("before : ", arr);
-  float winsorSize=stof(argv[1]);
+  float winsorSize=0.35;
   winsorize(arr, winsorSize);
-  printArrayToConsole("after : ", arr);
+  printArrayToConsole("after  : ", arr);
   return(0);
 }
