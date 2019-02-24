@@ -9,7 +9,7 @@ using namespace std;
 enum class SortOrder { asc, desc };
 enum class WinsorStyle { strict, relaxed };
 
-void printArrayToConsole(const char* phase, const vector<int> arr)
+void printArrayToConsole(const char* phase, const vector<int>& arr)
 {
   cout << phase;
   size_t size = arr.size();
