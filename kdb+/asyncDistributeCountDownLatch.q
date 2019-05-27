@@ -1,3 +1,6 @@
+/ Synopsis : This example below assumes that the master process is running at 5000 and slaves are running from 5001 to 5004.
+/ Understanding of basic async , countdownLatch and interprocessing communication is needed.
+
 
 / Use this function to quit at ay point to restart afresh on master process.
 .utl.quit:{ system"\\"; }
