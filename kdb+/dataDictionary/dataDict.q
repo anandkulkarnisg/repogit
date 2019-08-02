@@ -7,6 +7,12 @@
                    t:`shortType xkey t;
                    t
                 } 
+                
+.utl.getType:{ 
+                $[(type x)=0h;:`mixedkList;::]; 
+                t:first exec longType from .utl.getqTypes[] where id=abs type x; 
+                $[(type x)<0h;:t;:(`$ raze(string t; "List"))] 
+             }                
 
 .utl.getTableMeta:{                     
                     $[(`$ first enlist string y)<>(`$".");x:`$ raze(string y,".",x);::];
