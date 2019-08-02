@@ -12,7 +12,15 @@
                 $[(type x)=0h;:`mixedkList;::]; 
                 t:first exec longType from .utl.getqTypes[] where id=abs type x; 
                 $[(type x)<0h;:t;:(`$ raze(string t; "List"))] 
-             }                
+             }            
+             
+             
+.utl.buildErrMsg:{ `$ raze raze ("invalid arg types : got : -> "; { raze ("`"; x) } each string x; " : expected : ->"; { raze ("`"; x) } each string y) }
+
+/ Use this as example to test the above.
+/vwap:{ g:.utl.getType each (x;y); e:`floatList`floatList; $[all g<>e;:.utl.buildErrMsg[g;e];::]; (x%y)%sum x }
+/vwap[1 2 3j; 4 5 6j]
+/vwap[1 2 3i;"a"]
 
 .utl.getTableMeta:{                     
                     $[(`$ first enlist string y)<>(`$".");x:`$ raze(string y,".",x);::];
