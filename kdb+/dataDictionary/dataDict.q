@@ -13,14 +13,31 @@
                 t:first exec longType from .utl.getqTypes[] where id=abs type x; 
                 $[(type x)<0h;:t;:(`$ raze(string t; "List"))] 
              }            
-             
-             
+
 .utl.buildErrMsg:{ `$ raze raze ("invalid arg types : got : -> "; { raze ("`"; x) } each string x; " : expected : ->"; { raze ("`"; x) } each string y) }
 
+.utl.validateSigniture:{ 
+                         /x:`vwap;
+                         /y:(1 2 3f; 4 5 6i);
+                         t:value exec funcSigniture, cnt:count i from .config.funcSignitures[] where funcName=x;                        
+                         $[t[1]<>1;`funcSignitureNotFoundError;::];
+                         e:{value x} string first t[0];g:.utl.getType each y;
+                         $[any g<>e;:.utl.buildErrMsg[g;e];:1b];
+                       }
+
+/.utl.validateSigniture[`vwap;(1 2 3f; 4 5 6f)]
+.config.funcSignitures:{[] ([funcName:enlist `vwap]; funcSigniture:enlist `$"`floatList`floatList") } /.config.funcSignitures[]
+
 / Use this as example to test the above.
-/vwap:{ g:.utl.getType each (x;y); e:`floatList`floatList; $[all g<>e;:.utl.buildErrMsg[g;e];::]; (x%y)%sum x }
+/vwap:{ g:.utl.getType each (x;y); e:`floatList`floatList; $[all g<>e;:.utl.buildErrMsg[g;e];::]; (x$y)%sum x }
+/vwap:{ g:.utl.getType each (x;y); e:{ value x} string first exec funcSigniture from .config.funcSignitures[] where funcName=`vwap; $[all g<>e;:.utl.buildErrMsg[g;e];::]; (x$y)%sum x }
+vwap:{ r:.utl.validateSigniture[`vwap;(x;y)]; $[(type r)<>-1h;:r;::]; (x$y)%sum x }   
+.utl.validateSigniture[`vwap;(1 2 3j; 4 5 6i)]
 /vwap[1 2 3j; 4 5 6j]
+vwap[1 2 3f; 4 5 6f]
 /vwap[1 2 3i;"a"]
+/vwap[1 2 3f;4 5 6f]~(1 2 3f wavg 4 5 6f) / Test of the validity of implementation!!
+
 
 .utl.getTableMeta:{                     
                     $[(`$ first enlist string y)<>(`$".");x:`$ raze(string y,".",x);::];
