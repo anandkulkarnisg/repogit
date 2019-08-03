@@ -7,7 +7,6 @@
                    t:`shortType xkey t;
                    t
                 } 
-                
 .utl.getType:{ 
                 $[(type x)=0h;:`mixedkList;::]; 
                 t:first exec longType from .utl.getqTypes[] where id=abs type x; 
@@ -24,20 +23,22 @@
                          e:{value x} string first t[0];g:.utl.getType each y;
                          $[any g<>e;:.utl.buildErrMsg[g;e];:1b];
                        }
-
 /.utl.validateSigniture[`vwap;(1 2 3f; 4 5 6f)]
+
 .config.funcSignitures:{[] ([funcName:enlist `vwap]; funcSigniture:enlist `$"`floatList`floatList") } /.config.funcSignitures[]
 
 / Use this as example to test the above.
 /vwap:{ g:.utl.getType each (x;y); e:`floatList`floatList; $[all g<>e;:.utl.buildErrMsg[g;e];::]; (x$y)%sum x }
 /vwap:{ g:.utl.getType each (x;y); e:{ value x} string first exec funcSigniture from .config.funcSignitures[] where funcName=`vwap; $[all g<>e;:.utl.buildErrMsg[g;e];::]; (x$y)%sum x }
-vwap:{ r:.utl.validateSigniture[`vwap;(x;y)]; $[(type r)<>-1h;:r;::]; (x$y)%sum x }   
+vwap:{ $[(type r:.utl.validateSigniture[`vwap;(x;y)])<>-1h;:r;::]; (x$y)%sum x }   
 .utl.validateSigniture[`vwap;(1 2 3j; 4 5 6i)]
 /vwap[1 2 3j; 4 5 6j]
 vwap[1 2 3f; 4 5 6f]
 /vwap[1 2 3i;"a"]
 /vwap[1 2 3f;4 5 6f]~(1 2 3f wavg 4 5 6f) / Test of the validity of implementation!!
-
+/vwap[`anand;.z.p]
+/ vwap["f"$1+til 10;"f"$20+til 10]~(("f"$1+til 10) wavg "f"$20+til 10) / Test of the validity of implementation!!
+.config.funcSignitures[]
 
 .utl.getTableMeta:{                     
                     $[(`$ first enlist string y)<>(`$".");x:`$ raze(string y,".",x);::];
