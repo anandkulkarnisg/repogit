@@ -79,6 +79,12 @@ vwap[1 2 3f; 4 5 6f]
                     //?[value (`.dataDict.generateMeta;nameSpaceList);enlist ((=;`longType;enlist `long);(like;`nameSpace;"*test*"));0b;()]
                   }
 
+/ Create a delta control config param namespace so that we can query its meta.
+.dataDict.generateConfigParamMeta:{ cp:`$ ":" vs string x; tblContent:.uc.getActiveParamValue[cp[0];cp[1]]; resultPair:(`$ssr[raze (".deltaconfigparam.";string x);":";"_"];tblContent); resultPair[0] set resultPair[1];};
+.dataDict.getConfigParamMeta:{ .dataDict.generateConfigParamMeta each distinct .ex.prh".uc.getParamsForGroup[`SURVEILLANCE_CONFIG]"; .dataDict.generateMeta[`.deltaconfigparam] };
+.dataDict.getConfigParamMeta[]
+
+
 / Invocation examples.
 //.dataDict.testExample[]
 //.dataDict.generateMeta[`.]
