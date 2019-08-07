@@ -56,3 +56,25 @@ Table_B:([] PK:1 2 3 6 7 8 9 11; Value:`TROT`CAR`CAB`MONUMENT`PC`MICROSOFT`APPLE
           }
 / Invocation : .sql.oxij[`PK;Table_A;Table_B;cols Table_A;cols Table_B;`A_PK`A_Value;`B_PK`B_Value;`A_PK`B_PK]
 / Barebone kdb+ outer join excluding inner join results.
+
+/ CROSS OR CARTESIAN JOIN.
+.sql.cj:{[t1;t2;t1Col;t2Col]    
+            / Create a cartesian Join between t1 and t2 table rows for every combination of t1Col and t2Col.
+            ([] ?[t1;();();t1Col]) cross ([] ?[t2;();();t2Col])
+        }
+        
+/ Invocation : .sql.cj[Table_A;Table_B;`PK;`Value]
+/ Barebone kdb+ cross implementation : cartesian join of two table columns and results in a two column table. use with care.
+
+/ SELF JOIN.
+Table_C:([] staff_id:1+til 10;first_name:`Fabiola`Mireya`Genna`Virgie`Jannette`Marcelene`Venita`Kali`Layla`Bernadine;
+            last_name:`Jackson`Copeland`Serrano`Wiggins`David`Boyer`Daniel`Vargas`Terrell`Houston;
+            manager_id:0N 1 2 2 1 5 5 1 7 7);
+
+.sql.sj:{[t;joinFromCol;joinToCol]
+                keyCols:raze (joinFromCol;`full_name);
+                t:t lj joinFromCol xkey keyCols xcol ([] x:t[joinFromCol]; y:{`$ raze string x," ",string y }'[t[`first_name];t[`last_name]]);
+                t:update manager_name:{ { first ?[y;enlist (=;z;`x);();`full_name] }[;y;z] each x}[t[joinToCol];t;joinFromCol] from t;               
+                t
+        }
+/ Invocation : .sql.sj[Table_C;`staff_id;`manager_id]
