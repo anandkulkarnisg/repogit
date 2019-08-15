@@ -78,3 +78,10 @@ Table_C:([] staff_id:1+til 10;first_name:`Fabiola`Mireya`Genna`Virgie`Jannette`M
                 t
         }
 / Invocation : .sql.sj[Table_C;`staff_id;`manager_id]
+
+/ Union and union all join equivalents in kdb+. Add the analytic : TODO LATER.
+t1:([] c:1 2 3 4; d:`a`b`c`d);
+t2:([] c:3 5 6 2; d:`c`e`f`b);
+
+.sql.uaj:{[t1;t2] t1 uj t2} / This provides union all equivalent SQL join in kdb+
+.sql.uj:{[t1;t2] distinct t1 uj t2} / This provides union equivalent join in SQL kdb+.
