@@ -50,19 +50,20 @@ f:{ { `$ string x } each x};
 .utl.doPivot:{[t;k;p;v;func]
                         P:asc ?[t;();();(?:;p)];
                         t:![t;();0b;(enlist p)!(enlist (func;p))];
-                        t    
-                        /?[t;();(enlist k)!enlist k;(#;`P;(!;p;v))]
+                        ?[t;();(enlist k)!enlist k;(#;`P;(!;p;v))]
              }
 
-
-
 .utl.doPivot[t;`k;`p;`v;{}]    / works as expected!
-.utl.doPivot[t;`p;`k;`v;f]    / does not work!
+.utl.doPivot[t;`p;`k;`v;f]    /  does not work!
 .utl.doPivot[t;`v;`p;`k;{}]    / works as expected!
 
-
-
-
+t:([]k:1 2 3 2 3;p:`xx`yy`zz`xx`yy;v:10 20 30 40 50);t
+f:{ { `$ string x } each x};
+k:`p; p:`k; v:`v;
+P:asc ?[t;();();(?:;p)];
+P:f[P];
+t:![t;();0b;(enlist p)!(enlist (f;p))];
+?[t;();(enlist k)!enlist k;(#;`P;(!;p;v))]
 
 
 
