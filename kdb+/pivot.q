@@ -54,3 +54,9 @@ t:![t;();0b;(enlist p)!(enlist (f;p))];
 .utl.doPivot[t;`k;`p;`v;{}]    / works as expected!
 .utl.doPivot[t;`p;`k;`v;f]     / works as expected!
 .utl.doPivot[t;`v;`p;`k;{}]    / works as expected!
+
+/ doing pivoting in case where multiple values are present for criteria of pivot column (k) and column names (p).
+t:([]k:1 2 3 2 3 2;p:`xx`yy`xx`xx`yy`xx;v:10 20 30 40 50 60);t
+t1:select v by k,p from t;
+P:asc exec distinct p from t1;
+exec P#(p!v) by k:k from t1
