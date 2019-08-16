@@ -33,30 +33,8 @@ t1:([] k:`1`2`3`2`3;p:`xx`yy`zz`xx`yy;v:`10`20`30`40`50);t1
 .utl.doPivot[t1;`p;`k;`v]    / works now!
 
 / So we need fix to columns names which are coming from k. If k type is numeric attempt to convert it symbol type for representation.
-/parse "update k:{ { `$ string x } each x}[k] from t"
-f:{ { `$ string x } each x};
-![t;();0b;(enlist `k)!(enlist (f;`k))]
-
-
-/ New definition.
-.utl.doPivot:{[t;k;p;v;f]
-                        P:asc ?[t;();();(?:;p)];
-                        tinfo:type ?[t;();();p];
-                        $[tinfo<>11h;[t:![t;();0b;(enlist p)!(enlist (f;p))];];::];
-                        ?[t;();(enlist k)!enlist k;(#;`P;(!;p;v))]
-             }
-
-
-.utl.doPivot:{[t;k;p;v;func]
-                        P:asc ?[t;();();(?:;p)];
-                        t:![t;();0b;(enlist p)!(enlist (func;p))];
-                        ?[t;();(enlist k)!enlist k;(#;`P;(!;p;v))]
-             }
-
-.utl.doPivot[t;`k;`p;`v;{}]    / works as expected!
-.utl.doPivot[t;`p;`k;`v;f]    /  does not work!
-.utl.doPivot[t;`v;`p;`k;{}]    / works as expected!
-
+/ Temporary experimentation before building the final lambda.
+delete t, f, k, P, k, p, v from `.
 t:([]k:1 2 3 2 3;p:`xx`yy`zz`xx`yy;v:10 20 30 40 50);t
 f:{ { `$ string x } each x};
 k:`p; p:`k; v:`v;
@@ -65,12 +43,16 @@ P:f[P];
 t:![t;();0b;(enlist p)!(enlist (f;p))];
 ?[t;();(enlist k)!enlist k;(#;`P;(!;p;v))]
 
+/ Final lambda is below.
+.utl.doPivot:{[t;k;p;v;f]
+                        P:asc ?[t;();();(?:;p)];
+                        tinfo:type P;
+                        $[tinfo<>11h;[P:f[P];t:![t;();0b;(enlist p)!(enlist (f;p))];];::];
+                        ?[t;();(enlist k)!enlist k;(#;`P;(!;p;v))]
+             }
 
+.utl.doPivot[t;`k;`p;`v;{}]    / works as expected!
+.utl.doPivot[t;`p;`k;`v;f]     / works as expected!
+.utl.doPivot[t;`v;`p;`k;{}]    / works as expected!
 
-
-
-
-
-
-
-
+/ ------------------------------------------------------------------------------------------------- /
