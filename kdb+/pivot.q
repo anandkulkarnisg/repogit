@@ -54,5 +54,3 @@ t:![t;();0b;(enlist p)!(enlist (f;p))];
 .utl.doPivot[t;`k;`p;`v;{}]    / works as expected!
 .utl.doPivot[t;`p;`k;`v;f]     / works as expected!
 .utl.doPivot[t;`v;`p;`k;{}]    / works as expected!
-
-/ ------------------------------------------------------------------------------------------------- /
