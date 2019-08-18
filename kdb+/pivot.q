@@ -46,8 +46,7 @@ t:![t;();0b;(enlist p)!(enlist (f;p))];
 / Final lambda is below.
 .utl.doPivot:{[t;k;p;v;f]
                         P:asc ?[t;();();(?:;p)];
-                        tinfo:type P;
-                        $[tinfo<>11h;[P:f[P];t:![t;();0b;(enlist p)!(enlist (f;p))];];::];
+                        $[(type P)<>11h;[P:f[P];t:![t;();0b;(enlist p)!(enlist (f;p))];];::];
                         ?[t;();(enlist k)!enlist k;(#;`P;(!;p;v))]
              }
 
@@ -57,8 +56,9 @@ t:![t;();0b;(enlist p)!(enlist (f;p))];
 
 / doing pivoting in case where multiple values are present for criteria of pivot column (k) and column names (p).
 t:([]k:1 2 3 2 3 2 3;p:`xx`yy`xx`xx`yy`xx`zz;v:10 20 30 40 50 60 70);t
-t1:select v by k,p from t;
-P:asc exec distinct p from t1;
+f:{ { `$ string x } each x};f
+t1:select v by k,p from t;t1
+P:asc exec distinct p from t1;P
 exec P#(p!v) by k:k from t1
 
 / This can also be done like below using the lambda we wrote above.
