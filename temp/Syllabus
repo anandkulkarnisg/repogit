@@ -22,5 +22,18 @@
 	- Greedy and DP ( weak point ).
 	- bit masks and bit manipulation.
 - OS Funadamentals.
+	- OSI layers.
+	- OS scheduling and cooperative scheduling.
+	- Any famous and common protocols : tcp and udp [ which layer and difference between them ].
 - Net work fundamentals.
+	- sockets. tcp and udp. Etc.
+	- basic async and sync differences.
 - DB fundamentals.	
+	- Indexes. DS behind them.
+	- performance of clustered index vs non clustered index.
+	- joins.
+	- correlated subquery etc.
+	- query plan. optimizing queries indexes hints vs page scan.
+	- SQL vs noSQL.
+	- functiunal in memory databases.
+- 	
