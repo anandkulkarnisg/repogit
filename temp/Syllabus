@@ -1,0 +1,26 @@
+- Add topics from 
+		a) onsite letter 2020.
+		b) old mails from john last year 2018.
+		c) https://ravindrababuravula.com/ : Topics or Syllabus on Algorithms and DataStructures.
+
+- Sorting Algorithms
+- Searching Algorithms
+- maps [ hashmap and ordered_map ]
+- sets [ hashset and ordered set ]
+- multi map and multi sets.
+- deque.
+- LinkedList.
+- vectors.
+- heaps [ priority queues ] : binaryHeaps[min/max], binomial and fibonacci heaps.
+- Hashing Techniques.
+- Graphs [ BFS , DFS ] : acyclic and cyclic : cycle detection in both cases.
+- Binary Trees : BT , BST , m-way search Tree , AVL and RB Trees.
+- Tries.
+- Database Indexes : B Trees, B+ Trees.
+- Graph algorithms : Floyd Warshall , Minimum spanning Tree , Kruskal and Prims.
+- Puzzles.
+	- Greedy and DP ( weak point ).
+	- bit masks and bit manipulation.
+- OS Funadamentals.
+- Net work fundamentals.
+- DB fundamentals.	
