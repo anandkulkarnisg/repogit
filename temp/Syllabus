@@ -35,5 +35,16 @@
 	- correlated subquery etc.
 	- query plan. optimizing queries indexes hints vs page scan.
 	- SQL vs noSQL.
-	- functiunal in memory databases.
-- 	
+	- functional in memory databases.
+	- noSQL db experience [ kdb+ and mongodb ].
+- Basic UNIX/Linux commands [ not needed perhaps but slight brush up ].
+- Atleast 20 problems each category below.
+	- strings
+	- bit manipulation.
+	- graphs.
+	- binary Trees.
+	- DP.
+	- greedy.
+	- divide and conquer.
+	- combinatorics.
+	- algorithms.
