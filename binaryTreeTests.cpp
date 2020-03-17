@@ -168,6 +168,46 @@ bool isBalanced(const Node* node)
   return(violation==0);
 }
 
+void binaryTreeSizeInternal(const Node* node, size_t& count)
+{
+  if(node==nullptr)
+    return;
+  
+  if(node->left)
+  {
+    ++count;
+    binaryTreeSizeInternal(node->left, count);
+  }
+  if(node->right)
+  {
+    ++count;
+    binaryTreeSizeInternal(node->right, count);
+  }
+}
+
+size_t getBinaryTreeSize(const Node* root)
+{
+  if(root==nullptr)
+    return(0);
+  size_t count=1; // counts the root.
+  binaryTreeSizeInternal(root, count);
+  return(count);
+}
+
+size_t getBinaryTreeHeight(const Node* node)
+{
+  if(node==nullptr||isLeaf(node))
+    return(0);  
+  
+  size_t leftSubTreeHeight=0, rightSubTreeHeight=0;
+  if(node->left)
+    leftSubTreeHeight=1+getBinaryTreeHeight(node->left);
+  if(node->right)
+    rightSubTreeHeight=1+getBinaryTreeHeight(node->right);
+  
+  return(max(leftSubTreeHeight, rightSubTreeHeight)); 
+}
+
 int main(int argc, char* argv[]) 
 { 
   Node* root=newNode(1); 
