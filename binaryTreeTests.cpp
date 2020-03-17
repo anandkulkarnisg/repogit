@@ -3,6 +3,7 @@
 #include<vector>
 #include<unordered_set>
 #include<algorithm>
+#include<climits>
 
 using namespace std; 
 struct Node 
@@ -153,7 +154,7 @@ long isBalancedInternal(const Node* node, size_t& violation)
     rightSubTreeHeight=1+isBalancedInternal(node->right, violation);
   
   long heightDiff=abs(leftSubTreeHeight-rightSubTreeHeight);
-  displayNodeInfo(node, leftSubTreeHeight, rightSubTreeHeight, heightDiff);
+  //displayNodeInfo(node, leftSubTreeHeight, rightSubTreeHeight, heightDiff);
 
   if(heightDiff>1)
     ++violation;
@@ -203,22 +204,84 @@ size_t getBinaryTreeHeight(const Node* node)
   if(node->left)
     leftSubTreeHeight=1+getBinaryTreeHeight(node->left);
   if(node->right)
-    rightSubTreeHeight=1+getBinaryTreeHeight(node->right);
-  
+    rightSubTreeHeight=1+getBinaryTreeHeight(node->right); 
   return(max(leftSubTreeHeight, rightSubTreeHeight)); 
 }
 
-int main(int argc, char* argv[]) 
-{ 
+Node* generateWikiBinaryTree()
+{
   Node* root=newNode(1); 
-  root->left=newNode(2); 
-  root->right=newNode(3); 
-  root->left->left=newNode(4); 
-  root->left->left->left=newNode(5); 
+  root->left=newNode(2);
+  root->right=newNode(3);
+ 
+  root->left->left=newNode(4);
+  root->left->right=newNode(5);
+  root->left->left->left=newNode(8);
+  root->left->left->right=newNode(9);
   
-  if(isBalanced(root))
-    cout<<"Yes it is a Balanced binaryTree"<<endl;
+  root->left->right->left=newNode(10);
+  root->left->right->right=newNode(11);
+  
+  root->right->left=newNode(6);
+  root->right->right=newNode(7);
+  root->right->left->left=newNode(12); 
+  return(root);
+}
+
+Node* generateLeetCodeDiameterExample()
+{
+  
+/*
+          1
+         / \
+        2   3
+       / \     
+      4   5    
+*/
+  
+  Node* root=newNode(1);
+  root->left=newNode(2);
+  root->right=newNode(3);
+  root->left->left=newNode(4);
+  root->left->right=newNode(5);  
+  return(root);
+}
+
+void getBinaryTreeDiameterInternal(const Node* node, size_t& maxSize)
+{
+  if(node==nullptr||isLeaf(node))
+    return;    
+  size_t leftSubTreeHeight=0,rightSubTreeHeight=0;
+  if(node->left)
+    leftSubTreeHeight=1+getBinaryTreeHeight(node->left);
+  if(node->right)
+    rightSubTreeHeight=1+getBinaryTreeHeight(node->right); 
+  
+  if((leftSubTreeHeight+rightSubTreeHeight)>maxSize)
+    maxSize=leftSubTreeHeight+rightSubTreeHeight;
+}
+
+size_t getBinaryTreeDiameter(const Node* node)
+{
+  size_t height=0;
+  getBinaryTreeDiameterInternal(node, height);
+  return(height);  
+}
+
+int main(int argc, char* argv[]) 
+{    
+  //Node* root=generateWikiBinaryTree();
+  Node* root=generateLeetCodeDiameterExample();
+  if(isComplete(root))
+    cout<<"Yes it is a Complete binaryTree"<<endl;
   else
-    cout<<"No it is not a Balanced binaryTree"<<endl;
-  return(0); 
+    cout<<"No it is not a Complete binaryTree"<<endl;
+  
+  if(isFull(root))
+    cout<<"Yes it is a Full binaryTree"<<endl;
+  else
+    cout<<"No it is not a Full binaryTree"<<endl;
+  
+  cout << "The diameter of the tree is=" << getBinaryTreeDiameter(root) << endl;
+  return(0);
 }
