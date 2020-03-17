@@ -129,45 +129,34 @@ bool isDegenerate(const Node* node)
   return(false);
 }
 
-void displayNodeInfo(const Node* node, const size_t& leftSubTreeHeight, 
-                     const size_t& rightSubTreeHeight, const long& heightDiff)
-{
-  cout<<"At the node = "<<node->key<<", The heightDiff = "<<heightDiff<<endl;
-  cout<<"left subtree height = "<<leftSubTreeHeight<<" and rightSubTreeHeight = "<<rightSubTreeHeight<<endl;  
-}
-                     
-long isBalancedInternal(const Node* node, size_t& violation, bool whichSide)
+long isBalancedInternal(const Node* node, size_t& violation)
 { 
-  long leftSubTreeHeight=0, rightSubTreeHeight=0;
+  long leftSubTreeHeight=0,rightSubTreeHeight=0;
+  
   if(node==nullptr||isLeaf(node))
     return(0);
+  
   if(node->left)
-    leftSubTreeHeight=1+isBalancedInternal(node->left, violation, true);
+    leftSubTreeHeight=1+isBalancedInternal(node->left, violation);
+  
   if(node->right)
-    rightSubTreeHeight=1+isBalancedInternal(node->right, violation, false);
+    rightSubTreeHeight=1+isBalancedInternal(node->right, violation);
+  
   long heightDiff=abs(leftSubTreeHeight-rightSubTreeHeight);
-  if(heightDiff>1)
-  {
-    ++violation;
-    displayNodeInfo(node, leftSubTreeHeight, rightSubTreeHeight, heightDiff);
-  }    
-  else
-    displayNodeInfo(node, leftSubTreeHeight, rightSubTreeHeight, heightDiff);
+  //displayNodeInfo(node, leftSubTreeHeight, rightSubTreeHeight, heightDiff);
 
-  if(whichSide)
-    return(leftSubTreeHeight);
-  else
-    return(rightSubTreeHeight);  
+  if(heightDiff>1)
+    ++violation;
+
+  return(max(leftSubTreeHeight, rightSubTreeHeight));
 }
 
 bool isBalanced(const Node* node)
 {
   size_t violation=0;
-  long result=isBalancedInternal(node, violation, true); // true-false does not matter for root node.
+  isBalancedInternal(node, violation);
   return(violation==0);
 }
-
-
 int main(int argc, char* argv[]) 
 { 
   Node* root=newNode(1); 
