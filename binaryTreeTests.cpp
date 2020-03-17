@@ -1,6 +1,8 @@
 #include<iostream> 
 #include<string>
-#include<vector> 
+#include<vector>
+#include<unordered_set>
+#include<algorithm>
 
 using namespace std; 
 struct Node 
@@ -129,6 +131,14 @@ bool isDegenerate(const Node* node)
   return(false);
 }
 
+void displayNodeInfo(const Node* node, const size_t& leftSubTreeHeight, 
+                     const size_t& rightSubTreeHeight, 
+                     const long& heightDiff)
+{
+  cout<<"At the node="<<node->key<<", The HeightDiff="<<heightDiff;
+  cout<<", LeftSubtreeHeight="<<leftSubTreeHeight<<" and rightSubTreeHeight="<<rightSubTreeHeight<<endl;  
+}
+
 long isBalancedInternal(const Node* node, size_t& violation)
 { 
   long leftSubTreeHeight=0,rightSubTreeHeight=0;
@@ -143,7 +153,7 @@ long isBalancedInternal(const Node* node, size_t& violation)
     rightSubTreeHeight=1+isBalancedInternal(node->right, violation);
   
   long heightDiff=abs(leftSubTreeHeight-rightSubTreeHeight);
-  //displayNodeInfo(node, leftSubTreeHeight, rightSubTreeHeight, heightDiff);
+  displayNodeInfo(node, leftSubTreeHeight, rightSubTreeHeight, heightDiff);
 
   if(heightDiff>1)
     ++violation;
@@ -157,18 +167,18 @@ bool isBalanced(const Node* node)
   isBalancedInternal(node, violation);
   return(violation==0);
 }
+
 int main(int argc, char* argv[]) 
 { 
   Node* root=newNode(1); 
   root->left=newNode(2); 
-  root->right=newNode(3);
+  root->right=newNode(3); 
   root->left->left=newNode(4); 
-  root->left->right=newNode(5); 
-  root->right->left=newNode(6); 
-  root->right->right=newNode(7);   
-  if(isComplete(root))
-    cout<<"Yes it is a complete binaryTree"<<endl;
+  root->left->left->left=newNode(5); 
+  
+  if(isBalanced(root))
+    cout<<"Yes it is a Balanced binaryTree"<<endl;
   else
-    cout<<"No it is not a complete binaryTree"<<endl;
+    cout<<"No it is not a Balanced binaryTree"<<endl;
   return(0); 
 }
