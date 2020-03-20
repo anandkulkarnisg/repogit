@@ -19,8 +19,7 @@ Node * newNode(int k)
   temp->left=temp->right=NULL; 
   return temp; 
 } 
-
-void isCompleteInternal(const Node* node, int& violation)
+void isCompleteInternal(const Node* node, int& violation, unordered_set<size_t>& levelHash, size_t level=0)
 {
   if(node==nullptr)
     return;    
@@ -29,17 +28,21 @@ void isCompleteInternal(const Node* node, int& violation)
     ++violation;
     return;
   }    
+  if(node->left!=nullptr && node->right==nullptr)
+    levelHash.insert(level); // All level must be full and incompleteness must be at same level of leaves.    
+  
   if(node->left)
-    isCompleteInternal(node->left, violation);
+    isCompleteInternal(node->left, violation, levelHash, level+1);
   if(node->right)
-    isCompleteInternal(node->right, violation);  
+    isCompleteInternal(node->right, violation, levelHash, level+1);  
 }
 
 bool isComplete(const Node* node)
 {
   int violation=0;
-  isCompleteInternal(node, violation);
-  return(violation==0);
+  unordered_set<size_t> levelHash;
+  isCompleteInternal(node, violation, levelHash);
+  return(violation==0 && levelHash.size()<=1);
 }
 
 bool isLeaf(const Node* node)
@@ -247,6 +250,20 @@ Node* generateLeetCodeDiameterExample()
   return(root);
 }
 
+Node* testIsCompleteCase()
+{
+  Node* root=newNode(1);
+  root->left=newNode(2);
+  root->right=newNode(3);
+  root->left->left=newNode(4);
+  root->left->right=newNode(5);
+  root->right->left=newNode(6);  
+  root->left->left->left=newNode(7);
+  root->left->right->left=newNode(8);
+  //root->right->right=newNode(9);
+  return(root);
+}
+
 void getBinaryTreeDiameterInternal(const Node* node, size_t& maxSize)
 {
   if(node==nullptr||isLeaf(node))
@@ -270,18 +287,10 @@ size_t getBinaryTreeDiameter(const Node* node)
 
 int main(int argc, char* argv[]) 
 {    
-  //Node* root=generateWikiBinaryTree();
-  Node* root=generateLeetCodeDiameterExample();
+  Node* root=testIsCompleteCase();
   if(isComplete(root))
     cout<<"Yes it is a Complete binaryTree"<<endl;
   else
     cout<<"No it is not a Complete binaryTree"<<endl;
-  
-  if(isFull(root))
-    cout<<"Yes it is a Full binaryTree"<<endl;
-  else
-    cout<<"No it is not a Full binaryTree"<<endl;
-  
-  cout << "The diameter of the tree is=" << getBinaryTreeDiameter(root) << endl;
   return(0);
 }
