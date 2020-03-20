@@ -92,9 +92,9 @@ void isPerfectInternal(const Node* node, size_t& violation, unordered_set<size_t
     return;
   }  
   if(node->left)
-    isPerfectInternal(node->left, violation, hashSet, ++currentLevel);
+    isPerfectInternal(node->left, violation, hashSet, currentLevel+1);
   if(node->right)
-    isPerfectInternal(node->right, violation, hashSet, ++currentLevel);
+    isPerfectInternal(node->right, violation, hashSet, currentLevel+1);
 }
 
 // A perfect binary tree is a binary tree in which all interior nodes have two 
