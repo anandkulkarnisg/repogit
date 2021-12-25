@@ -1,0 +1,10 @@
+Max Profit = = MAX(G3:G129)*50
+Max Loss = = MIN(G3:G129)*50
+Annualized Profit = =(12*$B$27*$B$20)-(12*(1-$B$27)*$B$20)
+Profit/Loss per 1 bp probability = =(12*$B$27*$B$20)-(12*($B$27-0.01)*$B$20)
+Total Cover Spread = =IF(EXACT($B$36,"Y"),$B$34+$B$35,0)
+Pay Off Value = =(($B$4-$F3) + $B$10 + IF(($F3-$C$7)>0,$F3-$C$7,0) + $B$15 + IF(($F3<$C$12),0,$C$12-$F3))*$B$17 + IF(EXACT($B$36,"Y"),IF(($F3>$C$35),$F3-$C$35,0),0)
+=(($B$4-$F4) + $B$10 + IF(($F4-$C$7)>0,$F4-$C$7,0) + $B$15 + IF(($F4<$C$12),0,$C$12-$F4))*$B$17 +IF(EXACT($B$36,"Y"),IF(($F4>$C$35),$F4-$C$35,0),0)
+
+Pay Off Value = =(($J3-$B$4) + $B$10 + IF(($J3-$C$8)<0, $C$8-$J3, 0) + $B$15 + IF(($J3>$C$13),0,$J3-$C$13))*$B$17 +IF(EXACT($B$36,"Y"),IF(($J3-$C$34)<0,$C$34-$J3,0),0)
+=(($J4-$B$4) + $B$10 + IF(($J4-$C$8)<0, $C$8-$J4, 0) + $B$15 + IF(($J4>$C$13),0,$J4-$C$13))*$B$17+IF(EXACT($B$36,"Y"),IF(($J4-$C$34)<0,$C$34-$J4,0),0)
