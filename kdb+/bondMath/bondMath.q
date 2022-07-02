@@ -66,3 +66,22 @@
 
 / Get cashflow sum by year.
 .bondMath.getTotalCashFlowPerYear:{?[x;();(enlist `couponDate)!enlist ($;enlist `year;`couponDate);(enlist `cflowAmount)!enlist (sum;`cflowAmount)]};
+
+/ Add a function to implement cashflow for excel tracking api to convert csv file into cashflow xls tracker output.
+/ Synopsis : .bondMath.generateCashflowTrackerFromCsv[`$"/tmp/andhra2031.csv";`Quarterly]
+.bondMath.generateCashflowTrackerFromCsv:{[inputFilePathSym;paymentFrequency;issueDate;bondFaceValue]
+    / The script basically turns a given csv file into excel pastable output which can help track bond cashflow payments in excel using oneDrive.
+    / The input is symbol path of the file and it is not hsym adjusted. We will take this and generate a table that can be dumped to excel.
+    t:("SDFISFSF";enlist",") 0: hsym inputFilePathSym;
+    t:update prevpaymentDate:prev paymentDate from t;
+    t:update prevpaymentDate:issueDate from t where i=0;
+    t:update intDays:paymentDate-prevpaymentDate from t;
+    t:update cumPrincipalRedemption:sums principalRedemption from t;
+    t:update effNotionalAmt:bondFaceValue-cumPrincipalRedemption from t;
+    t:update effNotionalAmt:bondFaceValue^prev effNotionalAmt from t;
+    t:update cFlowAmount:{[a;b;c;d] .utl.roundNearestInteger[c*0.01*a*b*(1%$[.utl.isLeapYear[{("I"$4#string x) mod 4}[d]];366;365])]}'[couponRate;intDays;effNotionalAmt;paymentDate] from t;
+    r:select bondName:BondDescription,paymentDate:{t:"." vs string x;`$(,/)(t[2];"/";t[1];"/";t[0])}'[paymentDate], couponRate, intDays:{`$string x}'[intDays],
+       paymentFrequency:paymentFrequency,couponPayment:{`$string x}'[couponAmount],paymentStatus:`DUE,staggeredRedemptionAmount:`0,effNotionalAmount:`1000000
+       from t;
+       1_([] csvResults:`$.h.tx[`csv;r])
+  }

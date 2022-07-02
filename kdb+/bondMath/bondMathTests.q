@@ -31,7 +31,12 @@ bondStaticDict:.bondMath.generateBondStaticDict[(20;2017.12.05;.z.D;2027.10.20;"
 redemptionSchedule:([] redemptionDate:2027.01.20 2027.04.20 2027.07.20 2027.10.20;redemptionAmt:0.25 0.25 0.25 0.25);
 t6:.bondMath.generateCashFlowSchdule[bondStaticDict;redemptionSchedule];
 
-/ Case 7 : Shriram Secured 9.4 2028 Bond. Not in portfolio, just testing hypothetical example.
+/ Case 7 : Andhra Pradesh State Beverages Corporation Ltd 2031.
+bondStaticDict:.bondMath.generateBondStaticDict[(31;2022.06.14;.z.D;2031.05.30;"02|05|08|11";9.62;1000000;1b;1b)];
+redemptionSchedule:([] redemptionDate:2030.08.30 2030.11.29 2031.02.28 2031.05.30;redemptionAmt:0.25 0.25 0.25 0.25);
+t7:.bondMath.generateCashFlowSchdule[bondStaticDict;redemptionSchedule];
+
+/ Case 8 : Shriram Secured 9.4 2028 Bond. Not in portfolio, just testing hypothetical example.
 bondStaticDict:.bondMath.generateBondStaticDict[(12;2018.07.12;.z.D;2028.07.12;"07|13";9.4;1000000;0b;0b)];
 redemptionSchedule:delete from ([] redemptionDate:2030.06.28 2030.09.30 2030.12.31 2031.03.31;redemptionAmt:0.25 0.25 0.25 0.25) where 1b;
 t7:.bondMath.generateCashFlowSchdule[bondStaticDict;redemptionSchedule];
@@ -50,3 +55,17 @@ t7:.bondMath.generateCashFlowSchdule[bondStaticDict;redemptionSchedule];
 
 / Case 2 : UGRO Bond Monthly coupon.
 .bondMath.getTotalCashFlowPerYear[t2]
+
+
+.cfg.fullOrCurrent:`c;
+select bondName:`$"UP Power Corporation bond 31/03/2031 Quarterly 9.7(S)", 
+       paymentDate:{t:"." vs string x;`$(,/)(t[2];"/";t[1];"/";t[0])}'[couponDate],
+       couponRate:{`$string x}'[rate*100],
+       intDays:{`$string x}'[intDays],
+       paymentFrequency:`Annual,
+       couponPayment:{`$string x}'[cflowAmount],
+       paymentStatus:`DUE,
+       staggeredRedemptionAmount:`0,
+       effNotionalAmount:`1000000
+       from t6
+
