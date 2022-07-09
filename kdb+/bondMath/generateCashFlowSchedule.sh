@@ -40,7 +40,7 @@ echo -e "\\\\\\">>${qScript}
 
 # Execute the script and dump out the results.
 ~/runq5000 ${qScript} -q >/dev/null 2>&1
-cat /tmp/finalCashFlowResults.csv|grep -v "csvResults"|sed '1,3d'
+cat /tmp/finalCashFlowResults.csv|grep -v "csvResults"
 
 # Do the final cleanup.
 rm -f ${outputCsvResult} ${qScript} /tmp/finalCashFlowResults.csv
