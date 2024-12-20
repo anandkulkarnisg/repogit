@@ -1,0 +1,15 @@
+[anand@anandhost ms-sql]$sqlcmd -S localhost -d lessonSQL -U sa -P 'xxxxxxxx' -i LEFTJOIN_DUPCHECK.sql
+Changed database context to 'lessonSQL'.
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+LEFT JOIN
+A_PK        A_Value    B_Value    B_PK       
+----------- ---------- ---------- -----------
+         10 LUCENT     TROT                10
+         10 LUCENT     CAR                 10
+
+(2 rows affected)
