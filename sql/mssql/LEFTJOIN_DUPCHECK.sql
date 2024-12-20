@@ -1,0 +1,41 @@
+use lessonSQL
+go
+
+DROP TABLE IF EXISTS dbo.Table_AA
+go
+DROP TABLE IF EXISTS dbo.Table_BB
+go
+
+CREATE TABLE Table_AA
+(
+  PK INT NOT NULL,
+  [Value] VARCHAR(10)
+)
+GO
+
+CREATE TABLE Table_BB
+(
+  PK INT NOT NULL,
+  [Value] VARCHAR(10)
+)
+GO
+
+INSERT INTO Table_AA
+(PK, [Value]) VALUES (10, 'LUCENT')
+GO
+
+INSERT INTO Table_BB
+(PK, [Value]) VALUES (10, 'TROT')
+GO
+
+INSERT INTO Table_BB
+(PK, [Value]) VALUES (10, 'CAR')
+GO
+
+PRINT 'LEFT JOIN'
+SELECT A.PK AS A_PK, A.Value AS A_Value,
+       B.Value AS B_Value, B.PK AS B_PK
+FROM Table_AA A
+LEFT JOIN Table_BB B
+ON A.PK = B.PK
+GO
